@@ -4,17 +4,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Sistema de Avaliação Atitudinal</title>
+
+    <!-- Arquivo de estilização -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <h1>Protótipo: Avaliação Atitudinal</h1>
-    <p>Selecione o perfil para testar a navegação:</p>
-    <ul>
-        <li><a href="pages/professor/registro.html">Visão do Professor (Mobile)</a></li>
-        <li><a href="pages/coordenacao/painel.html">Visão da Coordenação (Desktop)</a></li>
-        <li><a href="pages/estudante/formativa.html">Visão do Estudante (Mobile)</a></li>
-    </ul>
+
+    <!-- Cabeçalho do sistema -->
+    <header class="cabecalho">
+        <div class="container">
+            <h1>Sistema de Avaliação Atitudinal</h1>
+            <p>Acompanhamento e desenvolvimento dos estudantes</p>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="container">
+
+        <section class="apresentacao">
+            <h2>Bem-vindo!</h2>
+            <p>
+                Selecione seu perfil para acessar as funcionalidades do sistema.
+            </p>
+        </section>
+
+        <!-- Área de seleção dos perfis -->
+        <section class="perfis">
+
+            <a href="pages/professor/registro.html" class="card">
+                <div class="icone">📋</div>
+                <h3>Professor</h3>
+                <p>
+                    Registre observações sobre as dimensões atitudinais dos estudantes.
+                </p>
+                <span>Acessar perfil →</span>
+            </a>
+
+            <a href="pages/coordenacao/painel.html" class="card">
+                <div class="icone">📊</div>
+                <h3>Coordenação</h3>
+                <p>
+                    Acompanhe e analise os registros de avaliação atitudinal.
+                </p>
+                <span>Acessar perfil →</span>
+            </a>
+
+            <a href="pages/estudante/formativa.html" class="card">
+                <div class="icone">🎓</div>
+                <h3>Estudante</h3>
+                <p>
+                    Consulte seu acompanhamento e desenvolvimento formativo.
+                </p>
+                <span>Acessar perfil →</span>
+            </a>
+
+        </section>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="rodape">
+        <p>Sistema de Avaliação Atitudinal</p>
+    </footer>
+
 </body>
 
 </html>
