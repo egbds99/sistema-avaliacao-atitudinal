@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Área do Estudante | Avaliação Atitudinal</title>
+
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+    <header class="cabecalho">
+        <div class="container">
+            <h1>Sistema de Avaliação Atitudinal</h1>
+            <p>Área do Estudante</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="apresentacao">
+            <h2>Meu Desenvolvimento Atitudinal</h2>
+            <p>
+                Acompanhe suas experiências e reflexões sobre o desenvolvimento das dimensões atitudinais.
+            </p>
+        </section>
+
+        <section class="formulario-container">
+
+            <div class="campo">
+                <label for="estudante">Selecione seu nome</label>
+                <select id="estudante">
+                    <option value="">Selecione um estudante</option>
+                </select>
+            </div>
+
+            <section class="painel-estudante">
+                <h2>Minhas observações</h2>
+
+                <div id="resumo-dimensoes">
+                    <p>
+                        Selecione seu nome para visualizar suas observações.
+                    </p>
+                </div>
+            </section>
+
+            <section class="historico-container">
+                <h2>Histórico de observações</h2>
+
+                <div id="historico-estudante">
+                    <p class="historico-vazio">
+                        Nenhuma observação para exibir.
+                    </p>
+                </div>
+            </section>
+
+            <div class="acoes-formulario">
+                <a href="../../index.html" class="botao-voltar">
+                    Voltar
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="rodape">
+        <p>Sistema de Avaliação Atitudinal</p>
+    </footer>
+
+    <script src="../../js/estudante.js"></script>
+
+</body>
+
+</html>

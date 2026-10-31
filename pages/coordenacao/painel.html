@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel da Coordenação | Avaliação Atitudinal</title>
+
+    <!-- Arquivo de estilização -->
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+    <!-- Cabeçalho -->
+    <header class="cabecalho">
+        <div class="container">
+            <h1>Sistema de Avaliação Atitudinal</h1>
+            <p>Área da Coordenação</p>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="container painel-coordenacao">
+
+        <!-- Apresentação -->
+        <section class="apresentacao">
+            <h2>Painel de Acompanhamento</h2>
+            <p>
+                Consulte e acompanhe os registros de avaliação atitudinal realizados pelos professores.
+            </p>
+        </section>
+
+        <!-- Indicadores gerais -->
+        <section class="indicadores">
+
+            <div class="indicador-card">
+                <h3>Total de registros</h3>
+                <p id="total-registros">0</p>
+            </div>
+
+            <div class="indicador-card indicador-positivo">
+                <h3>Observações positivas</h3>
+                <p id="total-positivas">0</p>
+            </div>
+
+            <div class="indicador-card indicador-negativo">
+                <h3>Observações negativas</h3>
+                <p id="total-negativas">0</p>
+            </div>
+
+            <div class="indicador-card indicador-neutro">
+                <h3>Observações neutras</h3>
+                <p id="total-neutras">0</p>
+            </div>
+
+        </section>
+
+        <!-- Área de consulta -->
+        <section class="painel-registros">
+
+            <div class="titulo-painel">
+                <div>
+                    <h2>Registros de Avaliação</h2>
+                    <p>
+                        Consulte os registros utilizando os filtros abaixo.
+                    </p>
+                </div>
+
+                <span id="quantidade-filtrada" class="contador-registros">
+                    0 registros
+                </span>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filtros">
+
+                <!-- Filtro por estudante -->
+                <div class="campo">
+                    <label for="filtro-estudante">Estudante</label>
+
+                    <select id="filtro-estudante">
+                        <option value="">Todos os estudantes</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por dimensão -->
+                <div class="campo">
+                    <label for="filtro-dimensao">
+                        Dimensão Atitudinal
+                    </label>
+
+                    <select id="filtro-dimensao">
+                        <option value="">Todas as dimensões</option>
+                        <option value="responsabilidade">Responsabilidade</option>
+                        <option value="colaboracao">Colaboração</option>
+                        <option value="autonomia">Autonomia</option>
+                        <option value="participacao">Participação</option>
+                        <option value="respeito">Respeito e convivência</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por tipo -->
+                <div class="campo">
+                    <label for="filtro-tipo">Tipo de Observação</label>
+
+                    <select id="filtro-tipo">
+                        <option value="">Todos os tipos</option>
+                        <option value="positiva">Positiva</option>
+                        <option value="negativa">Negativa</option>
+                        <option value="neutra">Neutra</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Botão para limpar os filtros -->
+            <div class="acoes-filtros">
+                <button type="button" id="limpar-filtros">
+                    Limpar filtros
+                </button>
+            </div>
+
+            <!-- Lista de registros -->
+            <div id="lista-coordenacao">
+
+                <p class="historico-vazio">
+                    Nenhum registro encontrado.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- Navegação -->
+        <div class="navegacao-painel">
+            <a href="../../index.html" class="botao-voltar">
+                ← Voltar à página inicial
+            </a>
+        </div>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="rodape">
+        <p>Sistema de Avaliação Atitudinal</p>
+    </footer>
+
+    <!-- JavaScript da coordenação -->
+    <script src="../../js/coordenacao.js"></script>
+
+</body>
+
+</html>

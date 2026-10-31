@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registro do Professor | Avaliação Atitudinal</title>
+
+    <!-- Arquivo de estilização -->
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+    <!-- Cabeçalho -->
+    <header class="cabecalho">
+        <div class="container">
+            <h1>Sistema de Avaliação Atitudinal</h1>
+            <p>Área do Professor</p>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="container">
+
+        <section class="apresentacao">
+            <h2>Registro de Observação</h2>
+            <p>
+                Registre suas observações sobre o desenvolvimento atitudinal dos estudantes.
+            </p>
+        </section>
+
+        <!-- Formulário de registro -->
+        <section class="formulario-container">
+
+            <form id="formulario-registro">
+
+                <!-- Seleção do estudante -->
+                <div class="campo">
+                    <label for="estudante">Estudante</label>
+
+                    <select id="estudante" name="estudante" required>
+                        <option value="">Selecione um estudante</option>
+                    </select>
+                </div>
+
+                <!-- Seleção da dimensão atitudinal -->
+                <div class="campo">
+                    <label for="dimensao">Dimensão Atitudinal</label>
+
+                    <select id="dimensao" name="dimensao" required>
+                        <option value="">Selecione uma dimensão</option>
+                        <option value="responsabilidade">Responsabilidade</option>
+                        <option value="colaboracao">Colaboração</option>
+                        <option value="autonomia">Autonomia</option>
+                        <option value="participacao">Participação</option>
+                        <option value="respeito">Respeito e convivência</option>
+                    </select>
+                </div>
+
+                <!-- Seleção do tipo de observação -->
+                <div class="campo">
+                    <label for="tipo">Tipo de Observação</label>
+
+                    <select id="tipo" name="tipo" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="positiva">Positiva</option>
+                        <option value="negativa">Negativa</option>
+                        <option value="neutra">Neutra</option>
+                    </select>
+                </div>
+
+                <!-- Observação qualitativa -->
+                <div class="campo">
+                    <label for="observacao">
+                        Observação Qualitativa (opcional)
+                    </label>
+
+                    <textarea id="observacao" name="observacao" rows="5" placeholder="Descreva a situação observada..."></textarea>
+                </div>
+
+                <!-- Botões -->
+                <div class="acoes-formulario">
+                    <a href="../../index.html" class="botao-voltar">
+                        Voltar
+                    </a>
+
+                    <button type="submit" class="botao-salvar">
+                        Registrar Observação
+                    </button>
+                </div>
+
+            </form>
+            <!-- Mensagem apresentada após o registro -->
+            <div id="mensagem-sucesso" class="mensagem-sucesso" hidden></div>
+
+            <!-- Histórico de observações registradas -->
+            <section class="historico-container">
+
+                <h2>Histórico de Observações</h2>
+
+                <p>Registros realizados pelo professor.</p>
+
+                <div id="lista-registros">
+                    <p class="historico-vazio">
+                        Nenhuma observação registrada até o momento.
+                    </p>
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="rodape">
+        <p>Sistema de Avaliação Atitudinal</p>
+    </footer>
+
+    <!-- Arquivo responsável pelas funcionalidades JavaScript -->
+    <script src="../../js/script.js"></script>
+
+</body>
+
+</html>
