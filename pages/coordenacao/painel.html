@@ -152,7 +152,6 @@
 
             </section>
 
-
             <!-- ACOMPANHAMENTO DO CLIMA ESCOLAR -->
 
             <section class="clima-escolar">
@@ -171,40 +170,40 @@
 
                     <div class="campo">
                         <label for="clima-responsavel">
-                Profissional responsável
-            </label>
+                            Profissional responsável
+                        </label>
 
                         <input type="text" id="clima-responsavel" placeholder="Nome do profissional" required>
                     </div>
 
                     <div class="campo">
                         <label for="clima-data">
-                Data do registro
-            </label>
+                            Data do registro
+                        </label>
 
                         <input type="date" id="clima-data" required>
                     </div>
 
                     <div class="campo">
                         <label for="clima-contexto">
-                Contexto observado
-            </label>
+                            Contexto observado
+                        </label>
 
                         <input type="text" id="clima-contexto" placeholder="Ex.: ambiente escolar, espaço de convivência ou atividade" required>
                     </div>
 
                     <div class="campo">
                         <label for="clima-descricao">
-                Percepção sobre o clima escolar
-            </label>
+                            Percepção sobre o clima escolar
+                        </label>
 
                         <textarea id="clima-descricao" rows="4" placeholder="Descreva a situação observada, considerando o ambiente, o bem-estar e a convivência." required></textarea>
                     </div>
 
                     <div class="acoes-formulario">
                         <button type="submit" class="botao-salvar">
-                Registrar observação
-            </button>
+                            Registrar observação
+                        </button>
                     </div>
 
                     <p id="mensagem-clima" class="mensagem-retorno" aria-live="polite"></p>
@@ -224,7 +223,6 @@
                 </div>
 
             </section>
-
 
             <!-- HISTÓRICO DE INTERVENÇÕES -->
 
@@ -361,6 +359,98 @@
                 </div>
 
             </section>
+
+        </section>
+
+        <!-- CONSULTA DA AUDITORIA -->
+
+        <section class="painel-auditoria">
+
+            <div class="titulo-painel">
+                <div>
+                    <h2>Registro de auditoria</h2>
+                    <p>
+                        Consulte as ações registradas pelos diferentes perfis do protótipo.
+                    </p>
+                </div>
+
+                <span id="quantidade-auditoria" class="contador-registros">
+                    0 eventos
+                </span>
+            </div>
+
+            <div class="aviso-clima">
+                A auditoria apresenta os eventos armazenados neste navegador. Como este protótipo não possui backend nem autenticação real, os registros não constituem uma trilha de auditoria inviolável.
+            </div>
+
+            <div class="filtros">
+
+                <div class="campo">
+                    <label for="filtro-auditoria-perfil">
+                        Perfil
+                    </label>
+
+                    <select id="filtro-auditoria-perfil">
+                        <option value="">Todos os perfis</option>
+                        <option value="professor">Professor</option>
+                        <option value="coordenacao">Coordenação</option>
+                        <option value="estudante">Estudante</option>
+                        <option value="responsaveis">Responsáveis</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="filtro-auditoria-estudante">
+                        Estudante
+                    </label>
+
+                    <select id="filtro-auditoria-estudante">
+                        <option value="">Todos os estudantes</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="filtro-auditoria-inicio">
+                        Data inicial
+                    </label>
+
+                    <input type="date" id="filtro-auditoria-inicio">
+                </div>
+
+                <div class="campo">
+                    <label for="filtro-auditoria-fim">
+                        Data final
+                    </label>
+
+                    <input type="date" id="filtro-auditoria-fim">
+                </div>
+
+            </div>
+
+            <div class="acoes-filtros">
+                <button type="button" id="limpar-filtros-auditoria">
+                    Limpar filtros da auditoria
+                </button>
+            </div>
+
+            <div id="lista-auditoria">
+                <p class="historico-vazio">
+                    Nenhum evento de auditoria encontrado.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- LIMITAÇÃO DA ANÁLISE POR TURMA -->
+
+        <section class="aviso-turma">
+
+            <h2>Análise por turma</h2>
+
+            <p>
+                A análise por turma ainda não está disponível. Os registros atuais identificam o estudante, mas não possuem um campo de vínculo com turma. Para apresentar essa análise corretamente, será necessário incluir a turma no cadastro ou vínculo dos estudantes
+                em uma etapa futura.
+            </p>
 
         </section>
 

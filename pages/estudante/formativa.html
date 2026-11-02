@@ -23,6 +23,7 @@
 
         <section class="apresentacao">
             <h2>Meu Desenvolvimento Atitudinal</h2>
+
             <p>
                 Acompanhe suas experiências, observações e reflexões sobre seu desenvolvimento nas dimensões atitudinais.
             </p>
@@ -32,6 +33,7 @@
 
             <div class="campo">
                 <label for="estudante">Selecione seu nome</label>
+
                 <select id="estudante">
                     <option value="">Selecione um estudante</option>
                 </select>
@@ -45,12 +47,44 @@
                 </div>
             </section>
 
+            <section class="secao-estudante">
+                <h2>Evolução temporal das observações</h2>
+
+                <p class="descricao-secao">
+                    Consulte como as observações foram registradas ao longo do tempo, considerando seus tipos: positivas, negativas e neutras.
+                </p>
+
+                <div id="grafico-evolucao" class="grafico-evolucao">
+                    <p class="historico-vazio">
+                        Selecione seu nome para visualizar a evolução temporal.
+                    </p>
+                </div>
+
+                <p class="aviso-prototipo">
+                    O gráfico apresenta quantidades de registros, não notas ou uma classificação do estudante.
+                </p>
+            </section>
+
             <section class="historico-container">
                 <h2>Histórico de observações</h2>
 
                 <div id="historico-estudante">
                     <p class="historico-vazio">
                         Nenhuma observação para exibir.
+                    </p>
+                </div>
+            </section>
+
+            <section class="secao-estudante">
+                <h2>Solicitações de autoavaliação</h2>
+
+                <p class="descricao-secao">
+                    Aqui aparecem as solicitações enviadas pelos seus professores. Você pode consultar a orientação e registrar sua reflexão.
+                </p>
+
+                <div id="solicitacoes-autoavaliacao">
+                    <p class="historico-vazio">
+                        Selecione seu nome para consultar as solicitações.
                     </p>
                 </div>
             </section>
@@ -177,7 +211,7 @@
         </section>
 
         <p class="aviso-prototipo">
-            Este protótipo utiliza armazenamento local no navegador. As manifestações e autoavaliações são demonstrativas e ainda não são enviadas à coordenação ou ao professor.
+            Este protótipo utiliza armazenamento local no navegador. A seleção do estudante é demonstrativa e não representa autenticação real. As autoavaliações e manifestações são armazenadas localmente e não são enviadas a um sistema institucional.
         </p>
 
     </main>

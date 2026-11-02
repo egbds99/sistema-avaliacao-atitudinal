@@ -2,26 +2,12 @@
 // DIMENSÕES ATITUDINAIS
 // ==========================================
 
-const dimensoesResponsavel = [{
-        valor: "responsabilidade",
-        nome: "Responsabilidade"
-    },
-    {
-        valor: "colaboracao",
-        nome: "Colaboração"
-    },
-    {
-        valor: "autonomia",
-        nome: "Autonomia"
-    },
-    {
-        valor: "participacao",
-        nome: "Participação"
-    },
-    {
-        valor: "respeito",
-        nome: "Respeito e convivência"
-    }
+const dimensoesResponsavel = [
+    { valor: "responsabilidade", nome: "Responsabilidade" },
+    { valor: "colaboracao", nome: "Colaboração" },
+    { valor: "autonomia", nome: "Autonomia" },
+    { valor: "participacao", nome: "Participação" },
+    { valor: "respeito", nome: "Respeito e convivência" }
 ];
 
 const tiposResponsavel = {
@@ -43,8 +29,14 @@ const conteudoAcompanhamento =
 const resumoResponsavel =
     document.getElementById("resumo-responsavel");
 
+const graficoResponsavel =
+    document.getElementById("grafico-evolucao-responsavel");
+
 const historicoResponsavel =
     document.getElementById("historico-responsavel");
+
+const solicitacoesResponsavel =
+    document.getElementById("solicitacoes-responsavel");
 
 const autoavaliacoesResponsavel =
     document.getElementById("autoavaliacoes-responsavel");
@@ -74,9 +66,7 @@ const listaManifestacoesResponsavel =
 function recuperarDadosResponsavel(chave) {
     try {
         const dados = JSON.parse(localStorage.getItem(chave)) || [];
-
         return Array.isArray(dados) ? dados : [];
-
     } catch (erro) {
         return [];
     }
@@ -91,11 +81,19 @@ let autoavaliacoesResponsavelDados =
 let contestacoesResponsavelDados =
     recuperarDadosResponsavel("contestacoesAtitudinais");
 
+let solicitacoesResponsavelDados =
+    recuperarDadosResponsavel("solicitacoesAutoavaliacaoAtitudinais");
+
 // ==========================================
 // AUDITORIA
 // ==========================================
 
-function registrarAuditoriaResponsavel(acao, estudante, detalhes, registroRelacionado) {
+function registrarAuditoriaResponsavel(
+    acao,
+    estudante,
+    detalhes,
+    registroRelacionado
+) {
     const auditoria = recuperarDadosResponsavel("auditoriaAtitudinal");
 
     const evento = {
@@ -124,7 +122,6 @@ function registrarAuditoriaResponsavel(acao, estudante, detalhes, registroRelaci
 // ==========================================
 
 function criarElementoResponsavel(tag, classe, texto) {
-
     const elemento = document.createElement(tag);
 
     if (classe) {
@@ -141,7 +138,6 @@ function criarElementoResponsavel(tag, classe, texto) {
 }
 
 function obterNomeDimensaoResponsavel(valor) {
-
     const dimensao = dimensoesResponsavel.find(function(item) {
         return item.valor === valor;
     });
@@ -154,7 +150,6 @@ function estudanteSelecionadoResponsavel() {
 }
 
 function exibirMensagemResponsavel(mensagem, sucesso) {
-
     mensagemResponsavel.textContent = mensagem;
 
     mensagemResponsavel.classList.remove(
@@ -167,15 +162,51 @@ function exibirMensagemResponsavel(mensagem, sucesso) {
     );
 }
 
+function obterTimestampResponsavel(item) {
+    if (
+        Number.isFinite(Number(item.timestamp)) &&
+        Number(item.timestamp) > 0
+    ) {
+        return Number(item.timestamp);
+    }
+
+    if (item.data) {
+        const dataInterpretada = new Date(item.data).getTime();
+
+        if (Number.isFinite(dataInterpretada)) {
+            return dataInterpretada;
+        }
+    }
+
+    return null;
+}
+
+function obterTextoSolicitacaoResponsavel(item) {
+    return item.texto ||
+        item.solicitacao ||
+        item.mensagem ||
+        item.descricao ||
+        "O professor solicitou uma reflexão sobre o desenvolvimento do estudante.";
+}
+
+function solicitacaoFoiRespondidaResponsavel(item) {
+    return item.status === "Respondida" ||
+        item.status === "respondida" ||
+        Boolean(item.respostaTimestamp);
+}
+
+function obterIdentificadorSolicitacaoResponsavel(item, indice) {
+    return item.id || item.timestamp || item.data || "solicitacao-" + indice;
+}
+
 // ==========================================
 // CARREGAMENTO DOS ESTUDANTES
 // ==========================================
 
 function carregarEstudantesResponsavel() {
-
     // Seleção demonstrativa.
-    // Em uma aplicação real, os estudantes seriam
-    // recuperados a partir do vínculo autenticado.
+    // Em uma aplicação real, os estudantes seriam recuperados
+    // a partir do vínculo autenticado do responsável.
 
     const estudantes = [
         "Estudante de demonstração 1",
@@ -186,14 +217,12 @@ function carregarEstudantesResponsavel() {
     ];
 
     estudantes.forEach(function(estudante) {
-
         const opcao = document.createElement("option");
 
         opcao.value = estudante;
         opcao.textContent = estudante;
 
         campoEstudanteResponsavel.appendChild(opcao);
-
     });
 }
 
@@ -202,11 +231,9 @@ function carregarEstudantesResponsavel() {
 // ==========================================
 
 function exibirResumoResponsavel(estudante) {
-
     resumoResponsavel.innerHTML = "";
 
     dimensoesResponsavel.forEach(function(dimensao) {
-
         const registrosDimensao = registrosResponsavel.filter(
             function(registro) {
                 return registro.estudante === estudante &&
@@ -255,11 +282,185 @@ function exibirResumoResponsavel(estudante) {
         );
 
         cartao.append(titulo, total, informacoes);
-
         resumoResponsavel.appendChild(cartao);
+    });
+}
 
+// ==========================================
+// GRÁFICO DE EVOLUÇÃO TEMPORAL
+// ==========================================
+
+function exibirGraficoResponsavel(estudante) {
+    graficoResponsavel.innerHTML = "";
+
+    const registrosDoEstudante = registrosResponsavel.filter(
+        function(registro) {
+            return registro.estudante === estudante &&
+                obterTimestampResponsavel(registro) !== null;
+        }
+    );
+
+    if (registrosDoEstudante.length === 0) {
+        graficoResponsavel.appendChild(
+            criarElementoResponsavel(
+                "p",
+                "historico-vazio",
+                "Ainda não existem observações com data disponível para apresentar a evolução temporal."
+            )
+        );
+
+        return;
+    }
+
+    const agrupamento = {};
+
+    registrosDoEstudante.forEach(function(registro) {
+        const data = new Date(obterTimestampResponsavel(registro));
+
+        const chave = data.getFullYear() + "-" +
+            String(data.getMonth() + 1).padStart(2, "0");
+
+        if (!agrupamento[chave]) {
+            agrupamento[chave] = {
+                positivas: 0,
+                negativas: 0,
+                neutras: 0,
+                data: data
+            };
+        }
+
+        if (registro.tipo === "positiva") {
+            agrupamento[chave].positivas++;
+        } else if (registro.tipo === "negativa") {
+            agrupamento[chave].negativas++;
+        } else if (registro.tipo === "neutra") {
+            agrupamento[chave].neutras++;
+        }
     });
 
+    const meses = Object.keys(agrupamento)
+        .sort()
+        .slice(-6);
+
+    const legenda = criarElementoResponsavel(
+        "div",
+        "grafico-legenda"
+    );
+
+    [{
+            classe: "legenda-positiva",
+            texto: "Positivas"
+        },
+        {
+            classe: "legenda-negativa",
+            texto: "Negativas"
+        },
+        {
+            classe: "legenda-neutra",
+            texto: "Neutras"
+        }
+    ].forEach(function(item) {
+        legenda.appendChild(
+            criarElementoResponsavel(
+                "span",
+                item.classe,
+                item.texto
+            )
+        );
+    });
+
+    graficoResponsavel.appendChild(legenda);
+
+    const areaGrafico = criarElementoResponsavel(
+        "div",
+        "grafico-barras"
+    );
+
+    meses.forEach(function(chave) {
+        const dados = agrupamento[chave];
+
+        const coluna = criarElementoResponsavel(
+            "div",
+            "grafico-coluna"
+        );
+
+        const barras = criarElementoResponsavel(
+            "div",
+            "grafico-grupo-barras"
+        );
+
+        const total =
+            dados.positivas +
+            dados.negativas +
+            dados.neutras;
+
+        const alturaMaxima = 150;
+        const escala = total > 0 ? alturaMaxima / total : 0;
+
+        [{
+                valor: dados.positivas,
+                classe: "barra-positiva",
+                nome: "Positivas"
+            },
+            {
+                valor: dados.negativas,
+                classe: "barra-negativa",
+                nome: "Negativas"
+            },
+            {
+                valor: dados.neutras,
+                classe: "barra-neutra",
+                nome: "Neutras"
+            }
+        ].forEach(function(item) {
+            const barra = criarElementoResponsavel(
+                "div",
+                "grafico-barra " + item.classe
+            );
+
+            const altura = item.valor > 0 ?
+                Math.max(item.valor * escala, 4) :
+                0;
+
+            barra.style.height = altura + "px";
+            barra.title = item.nome + ": " + item.valor;
+
+            barra.setAttribute(
+                "aria-label",
+                item.nome + ": " + item.valor + " observações"
+            );
+
+            barras.appendChild(barra);
+        });
+
+        const rotulo = criarElementoResponsavel(
+            "small",
+            "grafico-rotulo",
+            dados.data.toLocaleDateString("pt-BR", {
+                month: "short",
+                year: "numeric"
+            })
+        );
+
+        const totais = criarElementoResponsavel(
+            "small",
+            "grafico-totais",
+            total + (total === 1 ? " registro" : " registros")
+        );
+
+        coluna.append(barras, totais, rotulo);
+        areaGrafico.appendChild(coluna);
+    });
+
+    graficoResponsavel.appendChild(areaGrafico);
+
+    graficoResponsavel.appendChild(
+        criarElementoResponsavel(
+            "p",
+            "descricao-secao",
+            "O gráfico apresenta a quantidade de observações registradas em cada mês. Ele não representa nota, pontuação ou classificação do estudante."
+        )
+    );
 }
 
 // ==========================================
@@ -267,7 +468,6 @@ function exibirResumoResponsavel(estudante) {
 // ==========================================
 
 function exibirHistoricoResponsavel(estudante) {
-
     historicoResponsavel.innerHTML = "";
 
     const registros = registrosResponsavel
@@ -275,10 +475,12 @@ function exibirHistoricoResponsavel(estudante) {
             return registro.estudante === estudante;
         })
         .slice()
-        .reverse();
+        .sort(function(a, b) {
+            return (obterTimestampResponsavel(b) || 0) -
+                (obterTimestampResponsavel(a) || 0);
+        });
 
     if (registros.length === 0) {
-
         historicoResponsavel.appendChild(
             criarElementoResponsavel(
                 "p",
@@ -291,7 +493,6 @@ function exibirHistoricoResponsavel(estudante) {
     }
 
     registros.forEach(function(registro) {
-
         const cartao = criarElementoResponsavel(
             "article",
             "registro-card"
@@ -317,18 +518,163 @@ function exibirHistoricoResponsavel(estudante) {
             (registro.observacao || "Não informada.")
         );
 
+        const professor = criarElementoResponsavel(
+            "p",
+            "",
+            "Professor responsável: " +
+            (registro.professor || "Não informado")
+        );
+
         const data = criarElementoResponsavel(
             "small",
             "",
             "Data: " + (registro.data || "Não informada")
         );
 
-        cartao.append(titulo, tipo, observacao, data);
-
+        cartao.append(titulo, tipo, observacao, professor, data);
         historicoResponsavel.appendChild(cartao);
-
     });
+}
 
+// ==========================================
+// SOLICITAÇÕES DE AUTOAVALIAÇÃO
+// ==========================================
+
+function exibirSolicitacoesResponsavel(estudante) {
+    solicitacoesResponsavel.innerHTML = "";
+
+    solicitacoesResponsavelDados =
+        recuperarDadosResponsavel("solicitacoesAutoavaliacaoAtitudinais");
+
+    const solicitacoes = solicitacoesResponsavelDados
+        .map(function(item, indice) {
+            return {
+                item: item,
+                indice: indice
+            };
+        })
+        .filter(function(registro) {
+            return registro.item.estudante === estudante;
+        })
+        .reverse();
+
+    if (solicitacoes.length === 0) {
+        solicitacoesResponsavel.appendChild(
+            criarElementoResponsavel(
+                "p",
+                "historico-vazio",
+                "Nenhuma solicitação de autoavaliação foi registrada para este estudante."
+            )
+        );
+
+        return;
+    }
+
+    solicitacoes.forEach(function(registroSolicitacao) {
+        const item = registroSolicitacao.item;
+        const indice = registroSolicitacao.indice;
+
+        const cartao = criarElementoResponsavel(
+            "article",
+            "registro-card"
+        );
+
+        const titulo = criarElementoResponsavel(
+            "h3",
+            "",
+            "Solicitação de autoavaliação"
+        );
+
+        const professor = criarElementoResponsavel(
+            "p",
+            "",
+            "Professor responsável: " +
+            (item.professor || "Não informado")
+        );
+
+        const orientacao = criarElementoResponsavel(
+            "p",
+            "",
+            "Orientação: " + obterTextoSolicitacaoResponsavel(item)
+        );
+
+        const data = criarElementoResponsavel(
+            "small",
+            "",
+            "Data: " + (item.data || "Não informada")
+        );
+
+        const respondida = solicitacaoFoiRespondidaResponsavel(item);
+
+        const status = criarElementoResponsavel(
+            "p",
+            "status-manifestacao",
+            respondida ?
+            "Situação: Respondida pelo estudante" :
+            "Situação: Aguardando resposta do estudante"
+        );
+
+        cartao.append(titulo, professor, orientacao, data, status);
+
+        // Identifica a reflexão vinculada à solicitação.
+        const identificador = obterIdentificadorSolicitacaoResponsavel(
+            item,
+            indice
+        );
+
+        const resposta = autoavaliacoesResponsavelDados.find(
+            function(autoavaliacao) {
+                return autoavaliacao.estudante === estudante &&
+                    autoavaliacao.solicitacaoId === identificador;
+            }
+        );
+
+        if (resposta) {
+            cartao.appendChild(
+                criarElementoResponsavel(
+                    "h4",
+                    "",
+                    "Resposta do estudante"
+                )
+            );
+
+            cartao.appendChild(
+                criarElementoResponsavel(
+                    "p",
+                    "",
+                    "Dimensão: " +
+                    obterNomeDimensaoResponsavel(resposta.dimensao)
+                )
+            );
+
+            cartao.appendChild(
+                criarElementoResponsavel(
+                    "p",
+                    "",
+                    "Reflexão: " + resposta.reflexao
+                )
+            );
+
+            cartao.appendChild(
+                criarElementoResponsavel(
+                    "small",
+                    "",
+                    "Data da resposta: " +
+                    (resposta.data || "Não informada")
+                )
+            );
+        } else if (respondida) {
+            cartao.appendChild(
+                criarElementoResponsavel(
+                    "p",
+                    "descricao-secao",
+                    "A solicitação consta como respondida, mas não foi localizada uma reflexão vinculada a ela."
+                )
+            );
+        }
+
+        solicitacoesResponsavel.appendChild(cartao);
+    });
 }
 
 // ==========================================
@@ -336,7 +682,6 @@ function exibirHistoricoResponsavel(estudante) {
 // ==========================================
 
 function exibirAutoavaliacoesResponsavel(estudante) {
-
     autoavaliacoesResponsavel.innerHTML = "";
 
     autoavaliacoesResponsavelDados =
@@ -347,10 +692,12 @@ function exibirAutoavaliacoesResponsavel(estudante) {
             return item.estudante === estudante;
         })
         .slice()
-        .reverse();
+        .sort(function(a, b) {
+            return (obterTimestampResponsavel(b) || 0) -
+                (obterTimestampResponsavel(a) || 0);
+        });
 
     if (autoavaliacoes.length === 0) {
-
         autoavaliacoesResponsavel.appendChild(
             criarElementoResponsavel(
                 "p",
@@ -363,7 +710,6 @@ function exibirAutoavaliacoesResponsavel(estudante) {
     }
 
     autoavaliacoes.forEach(function(item) {
-
         const cartao = criarElementoResponsavel(
             "article",
             "registro-card"
@@ -384,15 +730,23 @@ function exibirAutoavaliacoesResponsavel(estudante) {
         const data = criarElementoResponsavel(
             "small",
             "",
-            "Data: " + item.data
+            "Data: " + (item.data || "Não informada")
         );
 
         cartao.append(titulo, reflexao, data);
 
+        if (item.solicitacaoId) {
+            cartao.appendChild(
+                criarElementoResponsavel(
+                    "p",
+                    "status-manifestacao",
+                    "Resposta vinculada a uma solicitação do professor."
+                )
+            );
+        }
+
         autoavaliacoesResponsavel.appendChild(cartao);
-
     });
-
 }
 
 // ==========================================
@@ -400,7 +754,6 @@ function exibirAutoavaliacoesResponsavel(estudante) {
 // ==========================================
 
 function exibirDevolutivasResponsavel(estudante) {
-
     devolutivasResponsavel.innerHTML = "";
 
     const devolutivas = recuperarDadosResponsavel(
@@ -415,7 +768,6 @@ function exibirDevolutivasResponsavel(estudante) {
         .reverse();
 
     if (devolutivasEstudante.length === 0) {
-
         devolutivasResponsavel.appendChild(
             criarElementoResponsavel(
                 "p",
@@ -428,7 +780,6 @@ function exibirDevolutivasResponsavel(estudante) {
     }
 
     devolutivasEstudante.forEach(function(item) {
-
         const cartao = criarElementoResponsavel(
             "article",
             "registro-card"
@@ -454,11 +805,8 @@ function exibirDevolutivasResponsavel(estudante) {
         );
 
         cartao.append(professor, texto, data);
-
         devolutivasResponsavel.appendChild(cartao);
-
     });
-
 }
 
 // ==========================================
@@ -466,7 +814,6 @@ function exibirDevolutivasResponsavel(estudante) {
 // ==========================================
 
 function carregarObservacoesContestacaoResponsavel(estudante) {
-
     registroResponsavel.innerHTML = "";
 
     const opcaoInicial = document.createElement("option");
@@ -477,7 +824,6 @@ function carregarObservacoesContestacaoResponsavel(estudante) {
     registroResponsavel.appendChild(opcaoInicial);
 
     registrosResponsavel.forEach(function(registro, indice) {
-
         if (registro.estudante !== estudante) {
             return;
         }
@@ -494,9 +840,7 @@ function carregarObservacoesContestacaoResponsavel(estudante) {
             (registro.observacao || "Sem descrição").substring(0, 60);
 
         registroResponsavel.appendChild(opcao);
-
     });
-
 }
 
 // ==========================================
@@ -504,44 +848,35 @@ function carregarObservacoesContestacaoResponsavel(estudante) {
 // ==========================================
 
 function registrarContestacaoResponsavel(evento) {
-
     evento.preventDefault();
 
     const estudante = estudanteSelecionadoResponsavel();
-
     const indice = registroResponsavel.value;
-
     const manifestacao = manifestacaoResponsavel.value.trim();
 
     if (!estudante) {
-
         exibirMensagemResponsavel(
             "Selecione um estudante.",
             false
         );
-
         return;
     }
 
     if (indice === "" || !manifestacao) {
-
         exibirMensagemResponsavel(
             "Selecione uma observação e escreva sua manifestação.",
             false
         );
-
         return;
     }
 
     const registroOriginal = registrosResponsavel[Number(indice)];
 
     if (!registroOriginal || registroOriginal.estudante !== estudante) {
-
         exibirMensagemResponsavel(
             "Não foi possível localizar a observação selecionada.",
             false
         );
-
         return;
     }
 
@@ -551,27 +886,16 @@ function registrarContestacaoResponsavel(evento) {
     const timestamp = Date.now();
 
     const novaContestacao = {
-
         estudante: estudante,
-
         perfil: "responsavel",
-
         indiceRegistro: Number(indice),
-
         dimensao: registroOriginal.dimensao,
-
         tipo: registroOriginal.tipo,
-
         observacaoOriginal: registroOriginal.observacao || "",
-
         manifestacao: manifestacao,
-
         data: new Date().toLocaleString("pt-BR"),
-
         timestamp: timestamp,
-
         status: "Registrada"
-
     };
 
     contestacoesResponsavelDados.push(novaContestacao);
@@ -597,7 +921,6 @@ function registrarContestacaoResponsavel(evento) {
     );
 
     exibirManifestacoesResponsavel(estudante);
-
 }
 
 // ==========================================
@@ -605,7 +928,6 @@ function registrarContestacaoResponsavel(evento) {
 // ==========================================
 
 function exibirManifestacoesResponsavel(estudante) {
-
     listaManifestacoesResponsavel.innerHTML = "";
 
     contestacoesResponsavelDados =
@@ -613,16 +935,13 @@ function exibirManifestacoesResponsavel(estudante) {
 
     const manifestacoes = contestacoesResponsavelDados
         .filter(function(item) {
-
             return item.estudante === estudante &&
                 item.perfil === "responsavel";
-
         })
         .slice()
         .reverse();
 
     if (manifestacoes.length === 0) {
-
         listaManifestacoesResponsavel.appendChild(
             criarElementoResponsavel(
                 "p",
@@ -635,7 +954,6 @@ function exibirManifestacoesResponsavel(estudante) {
     }
 
     manifestacoes.forEach(function(item) {
-
         const cartao = criarElementoResponsavel(
             "article",
             "registro-card"
@@ -688,9 +1006,7 @@ function exibirManifestacoesResponsavel(estudante) {
         );
 
         listaManifestacoesResponsavel.appendChild(cartao);
-
     });
-
 }
 
 // ==========================================
@@ -698,35 +1014,36 @@ function exibirManifestacoesResponsavel(estudante) {
 // ==========================================
 
 function atualizarAcompanhamentoResponsavel() {
-
     const estudante = estudanteSelecionadoResponsavel();
 
     registrosResponsavel =
         recuperarDadosResponsavel("registrosAtitudinais");
 
+    autoavaliacoesResponsavelDados =
+        recuperarDadosResponsavel("autoavaliacoesAtitudinais");
+
+    contestacoesResponsavelDados =
+        recuperarDadosResponsavel("contestacoesAtitudinais");
+
+    solicitacoesResponsavelDados =
+        recuperarDadosResponsavel("solicitacoesAutoavaliacaoAtitudinais");
+
     if (!estudante) {
-
         conteudoAcompanhamento.hidden = true;
-
         return;
     }
 
     conteudoAcompanhamento.hidden = false;
-
     mensagemResponsavel.textContent = "";
 
     exibirResumoResponsavel(estudante);
-
+    exibirGraficoResponsavel(estudante);
     exibirHistoricoResponsavel(estudante);
-
+    exibirSolicitacoesResponsavel(estudante);
     exibirAutoavaliacoesResponsavel(estudante);
-
     exibirDevolutivasResponsavel(estudante);
-
     carregarObservacoesContestacaoResponsavel(estudante);
-
     exibirManifestacoesResponsavel(estudante);
-
 }
 
 // ==========================================
@@ -743,13 +1060,18 @@ formularioContestacaoResponsavel.addEventListener(
     registrarContestacaoResponsavel
 );
 
-window.addEventListener("storage", function() {
+window.addEventListener("storage", function(evento) {
+    const chavesMonitoradas = [
+        "registrosAtitudinais",
+        "autoavaliacoesAtitudinais",
+        "contestacoesAtitudinais",
+        "devolutivasAtitudinais",
+        "solicitacoesAutoavaliacaoAtitudinais"
+    ];
 
-    registrosResponsavel =
-        recuperarDadosResponsavel("registrosAtitudinais");
-
-    atualizarAcompanhamentoResponsavel();
-
+    if (chavesMonitoradas.includes(evento.key)) {
+        atualizarAcompanhamentoResponsavel();
+    }
 });
 
 // ==========================================
@@ -757,5 +1079,4 @@ window.addEventListener("storage", function() {
 // ==========================================
 
 carregarEstudantesResponsavel();
-
 atualizarAcompanhamentoResponsavel();

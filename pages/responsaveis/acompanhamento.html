@@ -23,6 +23,7 @@
 
         <section class="apresentacao">
             <h2>Acompanhamento Formativo</h2>
+
             <p>
                 Consulte as informações sobre o desenvolvimento atitudinal do estudante e acompanhe suas observações e reflexões.
             </p>
@@ -46,7 +47,6 @@
                         <option value="">Selecione um estudante</option>
                     </select>
                 </div>
-
             </section>
 
             <section id="conteudo-acompanhamento" hidden>
@@ -64,6 +64,24 @@
                 </section>
 
                 <section class="secao-responsavel">
+                    <h2>Evolução temporal das observações</h2>
+
+                    <p class="descricao-secao">
+                        Consulte a quantidade de observações positivas, negativas e neutras registradas ao longo do tempo.
+                    </p>
+
+                    <div id="grafico-evolucao-responsavel" class="grafico-evolucao">
+                        <p class="historico-vazio">
+                            Selecione um estudante para visualizar a evolução temporal.
+                        </p>
+                    </div>
+
+                    <p class="aviso-prototipo">
+                        O gráfico apresenta quantidades de registros, não notas, pontuações ou classificações do estudante.
+                    </p>
+                </section>
+
+                <section class="secao-responsavel">
                     <h2>Histórico de observações</h2>
 
                     <p class="descricao-secao">
@@ -78,10 +96,24 @@
                 </section>
 
                 <section class="secao-responsavel">
+                    <h2>Solicitações de autoavaliação</h2>
+
+                    <p class="descricao-secao">
+                        Consulte as orientações enviadas pelos professores e acompanhe se o estudante já registrou sua reflexão.
+                    </p>
+
+                    <div id="solicitacoes-responsavel">
+                        <p class="historico-vazio">
+                            Nenhuma solicitação de autoavaliação disponível.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="secao-responsavel">
                     <h2>Autoavaliações do estudante</h2>
 
                     <p class="descricao-secao">
-                        Consulte as reflexões registradas pelo próprio estudante.
+                        Consulte as reflexões registradas pelo próprio estudante, inclusive aquelas vinculadas às solicitações dos professores.
                     </p>
 
                     <div id="autoavaliacoes-responsavel">
@@ -156,15 +188,15 @@
 
             <div class="acoes-formulario">
                 <a href="../../index.html" class="botao-voltar">
-                    ← Voltar à página inicial
+                    Voltar à página inicial
                 </a>
             </div>
 
         </section>
 
         <p class="aviso-prototipo">
-            Esta área é demonstrativa. A seleção de estudantes não representa um vínculo familiar autenticado. Em uma implementação real, o acesso deverá ser restrito aos estudantes vinculados ao responsável. As manifestações ainda não são enviadas ao professor ou
-            à coordenação.
+            Esta área é demonstrativa. A seleção de estudantes não representa um vínculo familiar autenticado. Em uma implementação real, o acesso deverá ser restrito aos estudantes vinculados ao responsável. As informações são armazenadas localmente neste protótipo
+            e as manifestações ainda não são enviadas ao professor ou à coordenação.
         </p>
 
     </main>

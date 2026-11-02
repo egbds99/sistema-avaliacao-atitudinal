@@ -39,6 +39,7 @@ const graficoEvolucao = document.getElementById("grafico-evolucao");
 const listaAlertas = document.getElementById("lista-alertas-coordenacao");
 
 // Intervenções
+
 const formularioIntervencao = document.getElementById("form-intervencao");
 const seletorEstudanteIntervencao = document.getElementById("intervencao-estudante");
 const campoResponsavelIntervencao = document.getElementById("intervencao-responsavel");
@@ -49,6 +50,7 @@ const listaIntervencoes = document.getElementById("lista-intervencoes");
 const mensagemIntervencao = document.getElementById("mensagem-intervencao");
 
 // Clima escolar
+
 const formularioClima = document.getElementById("form-clima-escolar");
 const campoResponsavelClima = document.getElementById("clima-responsavel");
 const campoDataClima = document.getElementById("clima-data");
@@ -56,6 +58,16 @@ const campoContextoClima = document.getElementById("clima-contexto");
 const campoDescricaoClima = document.getElementById("clima-descricao");
 const listaClimaEscolar = document.getElementById("lista-clima-escolar");
 const mensagemClima = document.getElementById("mensagem-clima");
+
+// Auditoria
+
+const filtroAuditoriaPerfil = document.getElementById("filtro-auditoria-perfil");
+const filtroAuditoriaEstudante = document.getElementById("filtro-auditoria-estudante");
+const filtroAuditoriaInicio = document.getElementById("filtro-auditoria-inicio");
+const filtroAuditoriaFim = document.getElementById("filtro-auditoria-fim");
+const botaoLimparAuditoria = document.getElementById("limpar-filtros-auditoria");
+const listaAuditoria = document.getElementById("lista-auditoria");
+const quantidadeAuditoria = document.getElementById("quantidade-auditoria");
 
 // ==========================================
 // ARMAZENAMENTO
@@ -96,8 +108,7 @@ function registrarAuditoria(acao, responsavel, estudante, detalhes, registroRela
     const agora = new Date();
 
     const evento = {
-        id: agora.getTime().toString() +
-            Math.random().toString(16).slice(2),
+        id: agora.getTime().toString() + Math.random().toString(16).slice(2),
         perfil: "coordenacao",
         modulo: "Área da Coordenação",
         acao: acao,
@@ -124,9 +135,6 @@ function registrarAuditoria(acao, responsavel, estudante, detalhes, registroRela
 // ==========================================
 // FUNÇÕES AUXILIARES
 // ==========================================
-
-// CORREÇÃO: permite adicionar várias classes CSS
-// separadas por espaço, sem gerar InvalidCharacterError.
 
 function criarElemento(tag, classe, texto) {
     const elemento = document.createElement(tag);
@@ -174,9 +182,19 @@ function obterDataRegistro(registro) {
     }
 
     if (registro.data) {
-        const partes = registro.data.match(
-            /^(\d{2})\/(\d{2})\/(\d{4})/
-        );
+        const texto = String(registro.data);
+
+        const dataISO = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+        if (dataISO) {
+            return new Date(
+                Number(dataISO[1]),
+                Number(dataISO[2]) - 1,
+                Number(dataISO[3])
+            );
+        }
+
+        const partes = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
 
         if (partes) {
             return new Date(
@@ -216,6 +234,7 @@ function formatarDataISO(dataISO) {
 
 function carregarEstudantes() {
     const estudanteSelecionado = filtroEstudante.value;
+
     const estudanteIntervencaoSelecionado =
         seletorEstudanteIntervencao.value;
 
@@ -1047,7 +1066,265 @@ function exibirRegistros() {
 }
 
 // ==========================================
-// LIMPAR FILTROS
+// CONSULTA DA AUDITORIA DOS QUATRO PERFIS
+// ==========================================
+
+function obterDataAuditoria(evento) {
+    if (evento.timestamp) {
+        const data = new Date(Number(evento.timestamp));
+
+        if (!Number.isNaN(data.getTime())) {
+            return data;
+        }
+    }
+
+    if (evento.data) {
+        const texto = String(evento.data);
+
+        const iso = texto.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+        if (iso) {
+            return new Date(
+                Number(iso[1]),
+                Number(iso[2]) - 1,
+                Number(iso[3])
+            );
+        }
+
+        const brasileira = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+
+        if (brasileira) {
+            return new Date(
+                Number(brasileira[3]),
+                Number(brasileira[2]) - 1,
+                Number(brasileira[1])
+            );
+        }
+    }
+
+    return null;
+}
+
+function atualizarFiltroEstudantesAuditoria() {
+    if (!filtroAuditoriaEstudante) return;
+
+    const selecionado = filtroAuditoriaEstudante.value;
+    const nomes = new Set();
+
+    recuperarDados("registrosAtitudinais").forEach(item => {
+        if (item.estudante) {
+            nomes.add(item.estudante);
+        }
+    });
+
+    recuperarDados("auditoriaAtitudinal").forEach(item => {
+        if (
+            item.estudante &&
+            item.estudante !== "Não aplicável"
+        ) {
+            nomes.add(item.estudante);
+        }
+    });
+
+    filtroAuditoriaEstudante.innerHTML =
+        '<option value="">Todos os estudantes</option>';
+
+    [...nomes]
+    .sort((a, b) => a.localeCompare(b, "pt-BR"))
+        .forEach(nome => {
+            const opcao = document.createElement("option");
+            opcao.value = nome;
+            opcao.textContent = nome;
+            filtroAuditoriaEstudante.appendChild(opcao);
+        });
+
+    if (nomes.has(selecionado)) {
+        filtroAuditoriaEstudante.value = selecionado;
+    }
+}
+
+function formatarDataAuditoria(evento) {
+    const data = obterDataAuditoria(evento);
+
+    if (data) {
+        return data.toLocaleString("pt-BR");
+    }
+
+    return evento.data || "Data não informada";
+}
+
+function nomePerfilAuditoria(perfil) {
+    const nomes = {
+        professor: "Professor",
+        coordenacao: "Coordenação",
+        estudante: "Estudante",
+        responsaveis: "Responsáveis",
+        responsavel: "Responsáveis"
+    };
+
+    return nomes[perfil] || perfil || "Perfil não informado";
+}
+
+function exibirAuditoria() {
+    if (!listaAuditoria || !quantidadeAuditoria) return;
+
+    const eventos = recuperarDados("auditoriaAtitudinal");
+
+    const perfil = filtroAuditoriaPerfil ?
+        filtroAuditoriaPerfil.value :
+        "";
+
+    const estudante = filtroAuditoriaEstudante ?
+        filtroAuditoriaEstudante.value :
+        "";
+
+    const inicio = filtroAuditoriaInicio && filtroAuditoriaInicio.value ?
+        new Date(filtroAuditoriaInicio.value + "T00:00:00") :
+        null;
+
+    const fim = filtroAuditoriaFim && filtroAuditoriaFim.value ?
+        new Date(filtroAuditoriaFim.value + "T23:59:59") :
+        null;
+
+    const encontrados = eventos.filter(evento => {
+        if (
+            perfil &&
+            evento.perfil !== perfil &&
+            !(perfil === "responsaveis" && evento.perfil === "responsavel")
+        ) {
+            return false;
+        }
+
+        if (estudante && evento.estudante !== estudante) {
+            return false;
+        }
+
+        const data = obterDataAuditoria(evento);
+
+        if (inicio && (!data || data < inicio)) {
+            return false;
+        }
+
+        if (fim && (!data || data > fim)) {
+            return false;
+        }
+
+        return true;
+    }).sort((a, b) => {
+        const dataA = obterDataAuditoria(a);
+        const dataB = obterDataAuditoria(b);
+
+        return (dataB ? dataB.getTime() : 0) -
+            (dataA ? dataA.getTime() : 0);
+    });
+
+    listaAuditoria.innerHTML = "";
+
+    quantidadeAuditoria.textContent =
+        encontrados.length +
+        (encontrados.length === 1 ? " evento" : " eventos");
+
+    if (encontrados.length === 0) {
+        listaAuditoria.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Nenhum evento de auditoria encontrado para os filtros selecionados."
+            )
+        );
+        return;
+    }
+
+    encontrados.forEach(evento => {
+        const cartao = criarElemento(
+            "article",
+            "registro-card auditoria-card"
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "h3",
+                "",
+                evento.acao || "Ação não informada"
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Perfil: " + nomePerfilAuditoria(evento.perfil)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Responsável: " + (evento.responsavel || "Não identificado")
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Estudante: " + (evento.estudante || "Não aplicável")
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Módulo: " + (evento.modulo || "Não informado")
+            )
+        );
+
+        if (evento.detalhes) {
+            cartao.appendChild(
+                criarElemento(
+                    "p",
+                    "",
+                    "Detalhes: " + evento.detalhes
+                )
+            );
+        }
+
+        cartao.appendChild(
+            criarElemento(
+                "small",
+                "",
+                "Data e horário: " + formatarDataAuditoria(evento)
+            )
+        );
+
+        listaAuditoria.appendChild(cartao);
+    });
+}
+
+function limparFiltrosAuditoria() {
+    if (filtroAuditoriaPerfil) {
+        filtroAuditoriaPerfil.value = "";
+    }
+
+    if (filtroAuditoriaEstudante) {
+        filtroAuditoriaEstudante.value = "";
+    }
+
+    if (filtroAuditoriaInicio) {
+        filtroAuditoriaInicio.value = "";
+    }
+
+    if (filtroAuditoriaFim) {
+        filtroAuditoriaFim.value = "";
+    }
+
+    exibirAuditoria();
+}
+
+// ==========================================
+// LIMPAR FILTROS DOS REGISTROS
 // ==========================================
 
 function limparFiltros() {
@@ -1084,6 +1361,31 @@ formularioClima.addEventListener(
     registrarClimaEscolar
 );
 
+// Eventos dos filtros da auditoria
+
+if (filtroAuditoriaPerfil) {
+    filtroAuditoriaPerfil.addEventListener("change", exibirAuditoria);
+}
+
+if (filtroAuditoriaEstudante) {
+    filtroAuditoriaEstudante.addEventListener("change", exibirAuditoria);
+}
+
+if (filtroAuditoriaInicio) {
+    filtroAuditoriaInicio.addEventListener("change", exibirAuditoria);
+}
+
+if (filtroAuditoriaFim) {
+    filtroAuditoriaFim.addEventListener("change", exibirAuditoria);
+}
+
+if (botaoLimparAuditoria) {
+    botaoLimparAuditoria.addEventListener(
+        "click",
+        limparFiltrosAuditoria
+    );
+}
+
 // ==========================================
 // ATUALIZAÇÃO ENTRE ABAS
 // ==========================================
@@ -1092,17 +1394,22 @@ window.addEventListener("storage", evento => {
     if (
         evento.key === "registrosAtitudinais" ||
         evento.key === "intervencoesAtitudinais" ||
-        evento.key === "climaEscolarAtitudinal"
+        evento.key === "climaEscolarAtitudinal" ||
+        evento.key === "auditoriaAtitudinal"
     ) {
         registros = recuperarDados("registrosAtitudinais");
         intervencoes = recuperarDados("intervencoesAtitudinais");
         registrosClima = recuperarDados("climaEscolarAtitudinal");
+        auditoria = recuperarDados("auditoriaAtitudinal");
 
         carregarEstudantes();
         atualizarIndicadores();
         exibirRegistros();
         exibirIntervencoes();
         exibirRegistrosClima();
+
+        atualizarFiltroEstudantesAuditoria();
+        exibirAuditoria();
     }
 });
 
@@ -1119,6 +1426,10 @@ exibirRegistros();
 exibirIntervencoes();
 
 exibirRegistrosClima();
+
+atualizarFiltroEstudantesAuditoria();
+
+exibirAuditoria();
 
 campoDataIntervencao.value = obterDataLocalISO();
 

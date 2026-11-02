@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Área do professor para registro e acompanhamento de observações atitudinais.">
     <title>Área do Professor | Avaliação Atitudinal</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
@@ -28,25 +29,49 @@
 
         <section class="formulario-container">
 
+            <!-- IDENTIFICAÇÃO DO PROFESSOR -->
+
+            <section class="secao-estudante">
+                <h2>Identificação do professor</h2>
+
+                <div class="campo">
+                    <label for="professor">Professor responsável</label>
+
+                    <input type="text" id="professor" name="professor" placeholder="Digite seu nome" autocomplete="name" required>
+
+                    <small>
+                        Seu nome será mantido durante a sessão atual do navegador
+                        para evitar preenchimentos repetidos.
+                    </small>
+                </div>
+            </section>
+
+            <!-- REGISTRO RÁPIDO -->
+
             <section class="secao-estudante">
                 <h2>Registrar observação</h2>
+
+                <p class="descricao-secao">
+                    O registro é realizado em três seleções: estudante, dimensão atitudinal e tipo de observação. Após a terceira seleção, o sistema salva automaticamente.
+                </p>
+
+                <p class="descricao-secao">
+                    A descrição qualitativa é opcional e pode ser preenchida antes de concluir as três seleções.
+                </p>
 
                 <form id="formulario-registro">
 
                     <div class="campo">
-                        <label for="professor">Professor responsável</label>
-                        <input type="text" id="professor" name="professor" placeholder="Digite seu nome" required>
-                    </div>
+                        <label for="estudante">1. Estudante</label>
 
-                    <div class="campo">
-                        <label for="estudante">Estudante</label>
                         <select id="estudante" name="estudante" required>
                             <option value="">Selecione um estudante</option>
                         </select>
                     </div>
 
                     <div class="campo">
-                        <label for="dimensao">Dimensão atitudinal</label>
+                        <label for="dimensao">2. Dimensão atitudinal</label>
+
                         <select id="dimensao" name="dimensao" required>
                             <option value="">Selecione uma dimensão</option>
                             <option value="responsabilidade">Responsabilidade</option>
@@ -58,7 +83,8 @@
                     </div>
 
                     <div class="campo">
-                        <label for="tipo">Tipo de observação</label>
+                        <label for="tipo">3. Tipo de observação</label>
+
                         <select id="tipo" name="tipo" required>
                             <option value="">Selecione o tipo</option>
                             <option value="positiva">Positiva</option>
@@ -68,43 +94,59 @@
                     </div>
 
                     <div class="campo">
-                        <label for="observacao">Observação qualitativa (opcional)</label>
-                        <textarea id="observacao" name="observacao" rows="4" placeholder="Descreva a situação observada..."></textarea>
+                        <label for="observacao">
+                            Observação qualitativa (opcional)
+                        </label>
+
+                        <textarea id="observacao" name="observacao" rows="4" placeholder="Descreva brevemente a situação observada..."></textarea>
                     </div>
 
-                    <button type="submit" class="botao-salvar">
-                        Registrar observação
-                    </button>
-
-                    <p id="mensagem-sucesso" class="mensagem-retorno" aria-live="polite"></p>
+                    <p id="mensagem-sucesso" class="mensagem-retorno" aria-live="polite" role="status"></p>
 
                 </form>
             </section>
 
+            <!-- HISTÓRICO DE OBSERVAÇÕES -->
+
             <section class="secao-estudante">
                 <h2>Histórico de observações</h2>
+
+                <p class="descricao-secao">
+                    Consulte os registros atitudinais realizados.
+                </p>
+
                 <div id="lista-registros">
-                    <p class="historico-vazio">Nenhuma observação registrada.</p>
+                    <p class="historico-vazio">
+                        Nenhuma observação registrada.
+                    </p>
                 </div>
             </section>
 
+            <!-- MANIFESTAÇÕES RECEBIDAS -->
+
             <section class="secao-estudante">
                 <h2>Manifestações recebidas</h2>
+
                 <p class="descricao-secao">
-                    Consulte as manifestações registradas por estudantes e responsáveis.
+                    Consulte as manifestações registradas por estudantes e responsáveis. A manifestação não apaga nem substitui a observação original.
                 </p>
 
                 <div class="campo">
                     <label for="filtro-manifestacoes">Estudante</label>
+
                     <select id="filtro-manifestacoes">
                         <option value="">Todos os estudantes</option>
                     </select>
                 </div>
 
                 <div id="lista-manifestacoes-professor">
-                    <p class="historico-vazio">Nenhuma manifestação registrada.</p>
+                    <p class="historico-vazio">
+                        Nenhuma manifestação registrada.
+                    </p>
                 </div>
             </section>
+
+            <!-- DEVOLUTIVAS PEDAGÓGICAS -->
 
             <section class="secao-estudante">
                 <h2>Registrar devolutiva pedagógica</h2>
@@ -116,12 +158,8 @@
                 <form id="form-devolutiva">
 
                     <div class="campo">
-                        <label for="professor-devolutiva">Professor responsável</label>
-                        <input type="text" id="professor-devolutiva" placeholder="Digite seu nome" required>
-                    </div>
-
-                    <div class="campo">
                         <label for="estudante-devolutiva">Estudante</label>
+
                         <select id="estudante-devolutiva" required>
                             <option value="">Selecione um estudante</option>
                         </select>
@@ -129,6 +167,7 @@
 
                     <div class="campo">
                         <label for="texto-devolutiva">Devolutiva</label>
+
                         <textarea id="texto-devolutiva" rows="5" placeholder="Escreva a orientação ou devolutiva pedagógica..." required></textarea>
                     </div>
 
@@ -136,16 +175,66 @@
                         Registrar devolutiva
                     </button>
 
-                    <p id="mensagem-devolutiva" class="mensagem-retorno" aria-live="polite"></p>
+                    <p id="mensagem-devolutiva" class="mensagem-retorno" aria-live="polite" role="status"></p>
 
                 </form>
 
                 <h3>Devolutivas registradas</h3>
 
                 <div id="lista-devolutivas-professor">
-                    <p class="historico-vazio">Nenhuma devolutiva registrada.</p>
+                    <p class="historico-vazio">
+                        Nenhuma devolutiva registrada.
+                    </p>
                 </div>
             </section>
+
+            <!-- SOLICITAÇÃO DE AUTOAVALIAÇÃO -->
+
+            <section class="secao-estudante">
+                <h2>Solicitar autoavaliação</h2>
+
+                <p class="descricao-secao">
+                    O professor pode solicitar que o estudante reflita sobre seu próprio desenvolvimento atitudinal. A solicitação ficará disponível na área do estudante.
+                </p>
+
+                <form id="form-solicitacao-autoavaliacao">
+
+                    <div class="campo">
+                        <label for="estudante-solicitacao">
+                            Estudante
+                        </label>
+
+                        <select id="estudante-solicitacao" required>
+                            <option value="">Selecione um estudante</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="texto-solicitacao">
+                            Orientação para a reflexão (opcional)
+                        </label>
+
+                        <textarea id="texto-solicitacao" rows="4" placeholder="Ex.: Reflita sobre sua participação e colaboração nas atividades."></textarea>
+                    </div>
+
+                    <button type="submit">
+                        Enviar solicitação de autoavaliação
+                    </button>
+
+                    <p id="mensagem-solicitacao" class="mensagem-retorno" aria-live="polite" role="status"></p>
+
+                </form>
+
+                <h3>Solicitações registradas</h3>
+
+                <div id="lista-solicitacoes-autoavaliacao">
+                    <p class="historico-vazio">
+                        Nenhuma solicitação de autoavaliação registrada.
+                    </p>
+                </div>
+            </section>
+
+            <!-- NAVEGAÇÃO -->
 
             <div class="acoes-formulario">
                 <a href="../../index.html" class="botao-voltar">
@@ -155,9 +244,23 @@
 
         </section>
 
-        <p class="aviso-prototipo">
-            Protótipo demonstrativo. Os registros são armazenados localmente no navegador e ainda não possuem autenticação ou controle real de acesso.
-        </p>
+        <!-- AVISO DE PRIVACIDADE E LIMITAÇÕES -->
+
+        <section class="aviso-prototipo" aria-label="Aviso sobre o protótipo">
+            <h2>Sobre este protótipo</h2>
+
+            <p>
+                Esta aplicação é demonstrativa e utiliza dados fictícios para representar o funcionamento do sistema.
+            </p>
+
+            <p>
+                Os registros são armazenados localmente no navegador, por meio do recurso localStorage. Não existe, nesta versão, autenticação real, servidor central ou controle efetivo de permissões de acesso.
+            </p>
+
+            <p>
+                As observações devem apoiar o diálogo e o acompanhamento pedagógico, sem finalidade de classificação ou punição dos estudantes.
+            </p>
+        </section>
 
     </main>
 
