@@ -1,4 +1,7 @@
-// Lista de estudantes de demonstração
+// ==========================================
+// DADOS E ELEMENTOS
+// ==========================================
+
 const estudantes = [
     "Estudante de demonstração 1",
     "Estudante de demonstração 2",
@@ -7,148 +10,682 @@ const estudantes = [
     "Estudante de demonstração 5"
 ];
 
-// Localiza o campo de seleção de estudantes
+const nomesDimensoes = {
+    responsabilidade: "Responsabilidade",
+    colaboracao: "Colaboração",
+    autonomia: "Autonomia",
+    participacao: "Participação",
+    respeito: "Respeito e convivência"
+};
+
+const nomesTipos = {
+    positiva: "Positiva",
+    negativa: "Negativa",
+    neutra: "Neutra"
+};
+
+const campoProfessor = document.getElementById("professor");
 const campoEstudante = document.getElementById("estudante");
+const campoDimensao = document.getElementById("dimensao");
+const campoTipo = document.getElementById("tipo");
+const campoObservacao = document.getElementById("observacao");
 
-// Adiciona os estudantes ao campo de seleção
-estudantes.forEach(function(estudante) {
-
-    const opcao = document.createElement("option");
-
-    opcao.value = estudante;
-    opcao.textContent = estudante;
-
-    campoEstudante.appendChild(opcao);
-
-});
-
-// Localiza os elementos do formulário
 const formulario = document.getElementById("formulario-registro");
-
 const mensagemSucesso = document.getElementById("mensagem-sucesso");
-
 const listaRegistros = document.getElementById("lista-registros");
 
-// Recupera os registros armazenados no navegador
-let registros = JSON.parse(
-    localStorage.getItem("registrosAtitudinais")
-) || [];
+const filtroManifestacoes = document.getElementById("filtro-manifestacoes");
+const listaManifestacoes = document.getElementById("lista-manifestacoes-professor");
 
-// Função responsável por apresentar o histórico
-function exibirRegistros() {
+const formularioDevolutiva = document.getElementById("form-devolutiva");
+const professorDevolutiva = document.getElementById("professor-devolutiva");
+const estudanteDevolutiva = document.getElementById("estudante-devolutiva");
+const textoDevolutiva = document.getElementById("texto-devolutiva");
+const mensagemDevolutiva = document.getElementById("mensagem-devolutiva");
+const listaDevolutivas = document.getElementById("lista-devolutivas-professor");
 
-    // Limpa o conteúdo atual da lista
-    listaRegistros.innerHTML = "";
+// ==========================================
+// ARMAZENAMENTO
+// ==========================================
 
-    // Verifica se existem registros
-    if (registros.length === 0) {
+function recuperarDados(chave) {
+    try {
+        const dados = JSON.parse(localStorage.getItem(chave)) || [];
 
-        const mensagem = document.createElement("p");
+        return Array.isArray(dados) ? dados : [];
 
-        mensagem.textContent =
-            "Nenhuma observação registrada até o momento.";
+    } catch (erro) {
+        console.error("Erro ao recuperar dados:", erro);
+        return [];
+    }
+}
 
-        mensagem.classList.add("historico-vazio");
+function salvarDados(chave, dados) {
+    try {
+        localStorage.setItem(chave, JSON.stringify(dados));
+        return true;
 
-        listaRegistros.appendChild(mensagem);
+    } catch (erro) {
+        console.error("Erro ao salvar dados:", erro);
+        return false;
+    }
+}
+
+let registros = recuperarDados("registrosAtitudinais");
+let contestacoes = recuperarDados("contestacoesAtitudinais");
+let devolutivas = recuperarDados("devolutivasAtitudinais");
+let auditoria = recuperarDados("auditoriaAtitudinal");
+
+// ==========================================
+// FUNÇÕES AUXILIARES
+// ==========================================
+
+function criarElemento(tag, classe, texto) {
+    const elemento = document.createElement(tag);
+
+    if (classe) {
+        elemento.classList.add(classe);
+    }
+
+    if (texto !== undefined) {
+        elemento.textContent = texto;
+    }
+
+    return elemento;
+}
+
+function mostrarMensagem(elemento, mensagem, sucesso) {
+    elemento.textContent = mensagem;
+
+    elemento.classList.remove(
+        "mensagem-sucesso",
+        "mensagem-erro"
+    );
+
+    elemento.classList.add(
+        sucesso ? "mensagem-sucesso" : "mensagem-erro"
+    );
+}
+
+function formatarData() {
+    return new Date().toLocaleString("pt-BR");
+}
+
+function obterDimensao(valor) {
+    return nomesDimensoes[valor] || valor || "Não informada";
+}
+
+function obterTipo(valor) {
+    return nomesTipos[valor] || valor || "Não informado";
+}
+
+function obterProfessorAtual() {
+    return (
+        campoProfessor.value.trim() ||
+        professorDevolutiva.value.trim() ||
+        "Professor não identificado"
+    );
+}
+
+// ==========================================
+// AUDITORIA DAS AÇÕES
+// ==========================================
+
+function registrarAuditoria(acao, responsavel, estudante, detalhes, registroRelacionado) {
+
+    auditoria = recuperarDados("auditoriaAtitudinal");
+
+    const dataHora = new Date();
+
+    const evento = {
+        id: Date.now().toString() + Math.random().toString(16).slice(2),
+
+        perfil: "professor",
+
+        modulo: "Área do Professor",
+
+        acao: acao,
+
+        responsavel: responsavel || "Professor não identificado",
+
+        estudante: estudante || "Não aplicável",
+
+        detalhes: detalhes || "",
+
+        registroRelacionado: registroRelacionado || null,
+
+        data: dataHora.toLocaleString("pt-BR"),
+
+        timestamp: dataHora.getTime()
+    };
+
+    auditoria.push(evento);
+
+    const salvou = salvarDados(
+        "auditoriaAtitudinal",
+        auditoria
+    );
+
+    if (!salvou) {
+        console.error("Não foi possível registrar a ação na auditoria.");
+        return false;
+    }
+
+    return true;
+}
+
+// ==========================================
+// CARREGAMENTO DOS ESTUDANTES
+// ==========================================
+
+function carregarEstudantes() {
+
+    const campos = [
+        campoEstudante,
+        estudanteDevolutiva,
+        filtroManifestacoes
+    ];
+
+    campos.forEach(campo => {
+
+        const valorAtual = campo.value;
+
+        campo.innerHTML = "";
+
+        const opcaoInicial = document.createElement("option");
+
+        opcaoInicial.value = "";
+
+        opcaoInicial.textContent =
+            campo === filtroManifestacoes ?
+            "Todos os estudantes" :
+            "Selecione um estudante";
+
+        campo.appendChild(opcaoInicial);
+
+        estudantes.forEach(estudante => {
+
+            const opcao = document.createElement("option");
+
+            opcao.value = estudante;
+            opcao.textContent = estudante;
+
+            campo.appendChild(opcao);
+        });
+
+        campo.value = valorAtual;
+    });
+}
+
+// ==========================================
+// REGISTRO DE OBSERVAÇÕES
+// ==========================================
+
+function registrarObservacao(evento) {
+
+    evento.preventDefault();
+
+    const professor = campoProfessor.value.trim();
+    const estudante = campoEstudante.value;
+    const dimensao = campoDimensao.value;
+    const tipo = campoTipo.value;
+    const observacao = campoObservacao.value.trim();
+
+    if (!professor || !estudante || !dimensao || !tipo) {
+
+        mostrarMensagem(
+            mensagemSucesso,
+            "Preencha todos os campos obrigatórios.",
+            false
+        );
 
         return;
     }
 
-    // Percorre todos os registros armazenados
-    registros.forEach(function(registro) {
+    registros = recuperarDados("registrosAtitudinais");
 
-        // Cria um cartão para cada registro
-        const cartao = document.createElement("div");
-
-        cartao.classList.add("registro-card");
-
-        // Cria os elementos de informação
-        const estudante = document.createElement("h3");
-
-        estudante.textContent = registro.estudante;
-
-        const dimensao = document.createElement("p");
-
-        dimensao.textContent =
-            "Dimensão: " + registro.dimensao;
-
-        const tipo = document.createElement("p");
-
-        tipo.textContent =
-            "Tipo: " + registro.tipo;
-
-        const observacao = document.createElement("p");
-
-        observacao.textContent =
-            "Observação: " +
-            (registro.observacao || "Não informada.");
-
-        const data = document.createElement("small");
-
-        data.textContent = "Data: " + registro.data;
-
-        // Adiciona as informações ao cartão
-        cartao.appendChild(estudante);
-        cartao.appendChild(dimensao);
-        cartao.appendChild(tipo);
-        cartao.appendChild(observacao);
-        cartao.appendChild(data);
-
-        // Adiciona o cartão ao histórico
-        listaRegistros.appendChild(cartao);
-
-    });
-
-}
-
-// Apresenta os registros existentes ao abrir a página
-exibirRegistros();
-
-// Captura o envio do formulário
-formulario.addEventListener("submit", function(event) {
-
-    // Impede o recarregamento da página
-    event.preventDefault();
-
-    // Captura os valores preenchidos
-    const estudante = campoEstudante.value;
-
-    const dimensao = document.getElementById("dimensao").value;
-
-    const tipo = document.getElementById("tipo").value;
-
-    const observacao =
-        document.getElementById("observacao").value.trim();
-
-    // Organiza os dados em um objeto
-    const registro = {
+    const novoRegistro = {
+        id: Date.now().toString(),
+        professor: professor,
         estudante: estudante,
         dimensao: dimensao,
         tipo: tipo,
         observacao: observacao,
-        data: new Date().toLocaleString("pt-BR")
+        data: formatarData(),
+        timestamp: Date.now()
     };
 
-    // Adiciona o novo registro à lista
-    registros.push(registro);
+    registros.push(novoRegistro);
 
-    // Salva a lista atualizada no navegador
-    localStorage.setItem(
+    const salvou = salvarDados(
         "registrosAtitudinais",
-        JSON.stringify(registros)
+        registros
     );
 
-    // Apresenta a mensagem de confirmação
-    mensagemSucesso.textContent =
-        "Observação registrada e armazenada com sucesso!";
+    if (!salvou) {
 
-    mensagemSucesso.hidden = false;
+        registros.pop();
 
-    // Atualiza o histórico na tela
-    exibirRegistros();
+        mostrarMensagem(
+            mensagemSucesso,
+            "Não foi possível salvar a observação. Verifique o armazenamento do navegador.",
+            false
+        );
 
-    // Limpa os campos do formulário
+        return;
+    }
+
+    // Registra a ação na auditoria.
+    const auditoriaSalva = registrarAuditoria(
+        "Registro de observação atitudinal",
+        professor,
+        estudante,
+        "Dimensão: " + obterDimensao(dimensao) +
+        ". Tipo: " + obterTipo(tipo) + ".",
+        novoRegistro.id
+    );
+
     formulario.reset();
 
+    if (auditoriaSalva) {
+
+        mostrarMensagem(
+            mensagemSucesso,
+            "Observação registrada com sucesso!",
+            true
+        );
+
+    } else {
+
+        mostrarMensagem(
+            mensagemSucesso,
+            "Observação salva, mas não foi possível registrar sua auditoria.",
+            false
+        );
+    }
+
+    exibirRegistros();
+}
+
+// ==========================================
+// EXIBIÇÃO DO HISTÓRICO DE OBSERVAÇÕES
+// ==========================================
+
+function exibirRegistros() {
+
+    registros = recuperarDados("registrosAtitudinais");
+
+    listaRegistros.innerHTML = "";
+
+    if (registros.length === 0) {
+
+        listaRegistros.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Nenhuma observação registrada."
+            )
+        );
+
+        return;
+    }
+
+    registros.slice().reverse().forEach(registro => {
+
+        const cartao = criarElemento("article", "registro-card");
+
+        cartao.appendChild(
+            criarElemento("h3", "", registro.estudante)
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Professor responsável: " +
+                (registro.professor || "Não identificado")
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Dimensão: " + obterDimensao(registro.dimensao)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Tipo: " + obterTipo(registro.tipo)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Observação: " +
+                (registro.observacao || "Não informada.")
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "small",
+                "",
+                "Data: " + (registro.data || "Não informada")
+            )
+        );
+
+        listaRegistros.appendChild(cartao);
+    });
+}
+
+// ==========================================
+// CONSULTA DE MANIFESTAÇÕES
+// ==========================================
+
+function exibirManifestacoes() {
+
+    contestacoes = recuperarDados("contestacoesAtitudinais");
+
+    listaManifestacoes.innerHTML = "";
+
+    const estudanteFiltro = filtroManifestacoes.value;
+
+    const encontradas = contestacoes.filter(item => {
+
+        return !estudanteFiltro ||
+            item.estudante === estudanteFiltro;
+
+    }).slice().reverse();
+
+    if (encontradas.length === 0) {
+
+        listaManifestacoes.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Nenhuma manifestação encontrada."
+            )
+        );
+
+        return;
+    }
+
+    encontradas.forEach(item => {
+
+        const cartao = criarElemento("article", "registro-card");
+
+        cartao.appendChild(
+            criarElemento("h3", "", item.estudante)
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Manifestação registrada por: " +
+                (item.perfil === "responsavel" ?
+                    "Responsável" :
+                    "Estudante")
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Dimensão: " + obterDimensao(item.dimensao)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Observação relacionada: " +
+                (item.observacaoOriginal || "Sem descrição.")
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Manifestação: " + item.manifestacao
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "status-manifestacao",
+                "Situação: " + item.status
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "small",
+                "",
+                "Data: " + item.data
+            )
+        );
+
+        listaManifestacoes.appendChild(cartao);
+    });
+}
+
+// ==========================================
+// REGISTRO DE DEVOLUTIVAS
+// ==========================================
+
+function registrarDevolutiva(evento) {
+
+    evento.preventDefault();
+
+    const professor = professorDevolutiva.value.trim();
+    const estudante = estudanteDevolutiva.value;
+    const texto = textoDevolutiva.value.trim();
+
+    if (!professor || !estudante || !texto) {
+
+        mostrarMensagem(
+            mensagemDevolutiva,
+            "Preencha todos os campos da devolutiva.",
+            false
+        );
+
+        return;
+    }
+
+    devolutivas = recuperarDados("devolutivasAtitudinais");
+
+    const novaDevolutiva = {
+        id: Date.now().toString(),
+        professor: professor,
+        estudante: estudante,
+        texto: texto,
+        data: formatarData(),
+        timestamp: Date.now()
+    };
+
+    devolutivas.push(novaDevolutiva);
+
+    const salvou = salvarDados(
+        "devolutivasAtitudinais",
+        devolutivas
+    );
+
+    if (!salvou) {
+
+        devolutivas.pop();
+
+        mostrarMensagem(
+            mensagemDevolutiva,
+            "Não foi possível salvar a devolutiva. Verifique o armazenamento do navegador.",
+            false
+        );
+
+        return;
+    }
+
+    // Registra a ação na auditoria.
+    const auditoriaSalva = registrarAuditoria(
+        "Registro de devolutiva pedagógica",
+        professor,
+        estudante,
+        "Devolutiva pedagógica registrada.",
+        novaDevolutiva.id
+    );
+
+    formularioDevolutiva.reset();
+
+    if (auditoriaSalva) {
+
+        mostrarMensagem(
+            mensagemDevolutiva,
+            "Devolutiva registrada com sucesso!",
+            true
+        );
+
+    } else {
+
+        mostrarMensagem(
+            mensagemDevolutiva,
+            "Devolutiva salva, mas não foi possível registrar sua auditoria.",
+            false
+        );
+    }
+
+    exibirDevolutivas();
+}
+
+// ==========================================
+// EXIBIÇÃO DAS DEVOLUTIVAS
+// ==========================================
+
+function exibirDevolutivas() {
+
+    devolutivas = recuperarDados("devolutivasAtitudinais");
+
+    listaDevolutivas.innerHTML = "";
+
+    if (devolutivas.length === 0) {
+
+        listaDevolutivas.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Nenhuma devolutiva registrada."
+            )
+        );
+
+        return;
+    }
+
+    devolutivas.slice().reverse().forEach(item => {
+
+        const cartao = criarElemento("article", "registro-card");
+
+        cartao.appendChild(
+            criarElemento("h3", "", item.estudante)
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Professor responsável: " + item.professor
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Devolutiva: " + item.texto
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "small",
+                "",
+                "Data: " + item.data
+            )
+        );
+
+        listaDevolutivas.appendChild(cartao);
+    });
+}
+
+// ==========================================
+// EVENTOS
+// ==========================================
+
+formulario.addEventListener(
+    "submit",
+    registrarObservacao
+);
+
+filtroManifestacoes.addEventListener("change", () => {
+
+    exibirManifestacoes();
+
+    // Registra a consulta realizada pelo professor.
+    registrarAuditoria(
+        "Consulta de manifestações",
+        obterProfessorAtual(),
+        filtroManifestacoes.value || "Todos os estudantes",
+        "Consulta ao histórico de manifestações e contestações.",
+        null
+    );
 });
+
+formularioDevolutiva.addEventListener(
+    "submit",
+    registrarDevolutiva
+);
+
+// ==========================================
+// ATUALIZAÇÃO ENTRE ABAS
+// ==========================================
+
+window.addEventListener("storage", evento => {
+
+    if (
+        evento.key === "registrosAtitudinais" ||
+        evento.key === "contestacoesAtitudinais" ||
+        evento.key === "devolutivasAtitudinais"
+    ) {
+
+        registros = recuperarDados("registrosAtitudinais");
+
+        contestacoes = recuperarDados("contestacoesAtitudinais");
+
+        devolutivas = recuperarDados("devolutivasAtitudinais");
+
+        exibirRegistros();
+
+        exibirManifestacoes();
+
+        exibirDevolutivas();
+    }
+});
+
+// ==========================================
+// INICIALIZAÇÃO
+// ==========================================
+
+carregarEstudantes();
+
+exibirRegistros();
+
+exibirManifestacoes();
+
+exibirDevolutivas();

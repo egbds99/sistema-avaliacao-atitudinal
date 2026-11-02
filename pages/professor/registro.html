@@ -4,16 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Registro do Professor | Avaliação Atitudinal</title>
-
-    <!-- Arquivo de estilização -->
+    <title>Área do Professor | Avaliação Atitudinal</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 
 <body>
 
-    <!-- Cabeçalho -->
     <header class="cabecalho">
         <div class="container">
             <h1>Sistema de Avaliação Atitudinal</h1>
@@ -21,105 +17,154 @@
         </div>
     </header>
 
-    <!-- Conteúdo principal -->
     <main class="container">
 
         <section class="apresentacao">
-            <h2>Registro de Observação</h2>
+            <h2>Acompanhamento Pedagógico</h2>
             <p>
-                Registre suas observações sobre o desenvolvimento atitudinal dos estudantes.
+                Registre observações, acompanhe manifestações e elabore devolutivas individuais para os estudantes.
             </p>
         </section>
 
-        <!-- Formulário de registro -->
         <section class="formulario-container">
 
-            <form id="formulario-registro">
+            <section class="secao-estudante">
+                <h2>Registrar observação</h2>
 
-                <!-- Seleção do estudante -->
-                <div class="campo">
-                    <label for="estudante">Estudante</label>
+                <form id="formulario-registro">
 
-                    <select id="estudante" name="estudante" required>
-                        <option value="">Selecione um estudante</option>
-                    </select>
-                </div>
+                    <div class="campo">
+                        <label for="professor">Professor responsável</label>
+                        <input type="text" id="professor" name="professor" placeholder="Digite seu nome" required>
+                    </div>
 
-                <!-- Seleção da dimensão atitudinal -->
-                <div class="campo">
-                    <label for="dimensao">Dimensão Atitudinal</label>
+                    <div class="campo">
+                        <label for="estudante">Estudante</label>
+                        <select id="estudante" name="estudante" required>
+                            <option value="">Selecione um estudante</option>
+                        </select>
+                    </div>
 
-                    <select id="dimensao" name="dimensao" required>
-                        <option value="">Selecione uma dimensão</option>
-                        <option value="responsabilidade">Responsabilidade</option>
-                        <option value="colaboracao">Colaboração</option>
-                        <option value="autonomia">Autonomia</option>
-                        <option value="participacao">Participação</option>
-                        <option value="respeito">Respeito e convivência</option>
-                    </select>
-                </div>
+                    <div class="campo">
+                        <label for="dimensao">Dimensão atitudinal</label>
+                        <select id="dimensao" name="dimensao" required>
+                            <option value="">Selecione uma dimensão</option>
+                            <option value="responsabilidade">Responsabilidade</option>
+                            <option value="colaboracao">Colaboração</option>
+                            <option value="autonomia">Autonomia</option>
+                            <option value="participacao">Participação</option>
+                            <option value="respeito">Respeito e convivência</option>
+                        </select>
+                    </div>
 
-                <!-- Seleção do tipo de observação -->
-                <div class="campo">
-                    <label for="tipo">Tipo de Observação</label>
+                    <div class="campo">
+                        <label for="tipo">Tipo de observação</label>
+                        <select id="tipo" name="tipo" required>
+                            <option value="">Selecione o tipo</option>
+                            <option value="positiva">Positiva</option>
+                            <option value="negativa">Negativa</option>
+                            <option value="neutra">Neutra</option>
+                        </select>
+                    </div>
 
-                    <select id="tipo" name="tipo" required>
-                        <option value="">Selecione o tipo</option>
-                        <option value="positiva">Positiva</option>
-                        <option value="negativa">Negativa</option>
-                        <option value="neutra">Neutra</option>
-                    </select>
-                </div>
-
-                <!-- Observação qualitativa -->
-                <div class="campo">
-                    <label for="observacao">
-                        Observação Qualitativa (opcional)
-                    </label>
-
-                    <textarea id="observacao" name="observacao" rows="5" placeholder="Descreva a situação observada..."></textarea>
-                </div>
-
-                <!-- Botões -->
-                <div class="acoes-formulario">
-                    <a href="../../index.html" class="botao-voltar">
-                        Voltar
-                    </a>
+                    <div class="campo">
+                        <label for="observacao">Observação qualitativa (opcional)</label>
+                        <textarea id="observacao" name="observacao" rows="4" placeholder="Descreva a situação observada..."></textarea>
+                    </div>
 
                     <button type="submit" class="botao-salvar">
-                        Registrar Observação
+                        Registrar observação
                     </button>
-                </div>
 
-            </form>
-            <!-- Mensagem apresentada após o registro -->
-            <div id="mensagem-sucesso" class="mensagem-sucesso" hidden></div>
+                    <p id="mensagem-sucesso" class="mensagem-retorno" aria-live="polite"></p>
 
-            <!-- Histórico de observações registradas -->
-            <section class="historico-container">
-
-                <h2>Histórico de Observações</h2>
-
-                <p>Registros realizados pelo professor.</p>
-
-                <div id="lista-registros">
-                    <p class="historico-vazio">
-                        Nenhuma observação registrada até o momento.
-                    </p>
-                </div>
-
+                </form>
             </section>
+
+            <section class="secao-estudante">
+                <h2>Histórico de observações</h2>
+                <div id="lista-registros">
+                    <p class="historico-vazio">Nenhuma observação registrada.</p>
+                </div>
+            </section>
+
+            <section class="secao-estudante">
+                <h2>Manifestações recebidas</h2>
+                <p class="descricao-secao">
+                    Consulte as manifestações registradas por estudantes e responsáveis.
+                </p>
+
+                <div class="campo">
+                    <label for="filtro-manifestacoes">Estudante</label>
+                    <select id="filtro-manifestacoes">
+                        <option value="">Todos os estudantes</option>
+                    </select>
+                </div>
+
+                <div id="lista-manifestacoes-professor">
+                    <p class="historico-vazio">Nenhuma manifestação registrada.</p>
+                </div>
+            </section>
+
+            <section class="secao-estudante">
+                <h2>Registrar devolutiva pedagógica</h2>
+
+                <p class="descricao-secao">
+                    Registre uma orientação ou devolutiva individual relacionada ao acompanhamento do estudante.
+                </p>
+
+                <form id="form-devolutiva">
+
+                    <div class="campo">
+                        <label for="professor-devolutiva">Professor responsável</label>
+                        <input type="text" id="professor-devolutiva" placeholder="Digite seu nome" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="estudante-devolutiva">Estudante</label>
+                        <select id="estudante-devolutiva" required>
+                            <option value="">Selecione um estudante</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="texto-devolutiva">Devolutiva</label>
+                        <textarea id="texto-devolutiva" rows="5" placeholder="Escreva a orientação ou devolutiva pedagógica..." required></textarea>
+                    </div>
+
+                    <button type="submit">
+                        Registrar devolutiva
+                    </button>
+
+                    <p id="mensagem-devolutiva" class="mensagem-retorno" aria-live="polite"></p>
+
+                </form>
+
+                <h3>Devolutivas registradas</h3>
+
+                <div id="lista-devolutivas-professor">
+                    <p class="historico-vazio">Nenhuma devolutiva registrada.</p>
+                </div>
+            </section>
+
+            <div class="acoes-formulario">
+                <a href="../../index.html" class="botao-voltar">
+                    ← Voltar à página inicial
+                </a>
+            </div>
 
         </section>
 
+        <p class="aviso-prototipo">
+            Protótipo demonstrativo. Os registros são armazenados localmente no navegador e ainda não possuem autenticação ou controle real de acesso.
+        </p>
+
     </main>
 
-    <!-- Rodapé -->
     <footer class="rodape">
         <p>Sistema de Avaliação Atitudinal</p>
     </footer>
 
-    <!-- Arquivo responsável pelas funcionalidades JavaScript -->
     <script src="../../js/script.js"></script>
 
 </body>

@@ -24,7 +24,7 @@
         <section class="apresentacao">
             <h2>Meu Desenvolvimento Atitudinal</h2>
             <p>
-                Acompanhe suas experiências e reflexões sobre o desenvolvimento das dimensões atitudinais.
+                Acompanhe suas experiências, observações e reflexões sobre seu desenvolvimento nas dimensões atitudinais.
             </p>
         </section>
 
@@ -41,9 +41,7 @@
                 <h2>Minhas observações</h2>
 
                 <div id="resumo-dimensoes">
-                    <p>
-                        Selecione seu nome para visualizar suas observações.
-                    </p>
+                    <p>Selecione seu nome para visualizar suas observações.</p>
                 </div>
             </section>
 
@@ -57,13 +55,130 @@
                 </div>
             </section>
 
+            <section class="secao-estudante">
+                <h2>Minha autoavaliação</h2>
+
+                <p class="descricao-secao">
+                    Utilize este espaço para refletir sobre seu próprio desenvolvimento. Sua resposta não altera os registros realizados pelo professor.
+                </p>
+
+                <form id="form-autoavaliacao">
+
+                    <div class="campo">
+                        <label for="dimensao-autoavaliacao">
+                            Dimensão que desejo avaliar
+                        </label>
+
+                        <select id="dimensao-autoavaliacao" required>
+                            <option value="">Selecione uma dimensão</option>
+                            <option value="responsabilidade">Responsabilidade</option>
+                            <option value="colaboracao">Colaboração</option>
+                            <option value="autonomia">Autonomia</option>
+                            <option value="participacao">Participação</option>
+                            <option value="respeito">Respeito e convivência</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="texto-autoavaliacao">
+                            Minha reflexão
+                        </label>
+
+                        <textarea id="texto-autoavaliacao" rows="4" placeholder="O que considero que estou fazendo bem? O que posso melhorar?" required></textarea>
+                    </div>
+
+                    <button type="submit" id="salvar-autoavaliacao">
+                        Registrar autoavaliação
+                    </button>
+
+                    <p id="mensagem-autoavaliacao" class="mensagem-retorno" aria-live="polite"></p>
+
+                </form>
+
+                <div class="historico-autoavaliacoes">
+                    <h3>Minhas reflexões anteriores</h3>
+
+                    <div id="lista-autoavaliacoes">
+                        <p class="historico-vazio">
+                            Nenhuma autoavaliação registrada.
+                        </p>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="secao-estudante">
+                <h2>Minhas devolutivas pedagógicas</h2>
+
+                <p class="descricao-secao">
+                    Consulte as orientações e devolutivas registradas pelos seus professores.
+                </p>
+
+                <div id="devolutivas-estudante">
+                    <p class="historico-vazio">
+                        Nenhuma devolutiva disponível.
+                    </p>
+                </div>
+            </section>
+
+            <section class="secao-estudante">
+                <h2>Diálogo e contestação</h2>
+
+                <p class="descricao-secao">
+                    Caso queira esclarecer ou questionar uma observação, selecione o registro e escreva sua manifestação. O registro original será preservado.
+                </p>
+
+                <form id="form-contestacao">
+
+                    <div class="campo">
+                        <label for="registro-contestacao">
+                            Observação relacionada
+                        </label>
+
+                        <select id="registro-contestacao" required>
+                            <option value="">Selecione uma observação</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="texto-contestacao">
+                            Sua manifestação
+                        </label>
+
+                        <textarea id="texto-contestacao" rows="4" placeholder="Escreva sua dúvida, esclarecimento ou manifestação." required></textarea>
+                    </div>
+
+                    <button type="submit" id="enviar-contestacao">
+                        Registrar manifestação
+                    </button>
+
+                    <p id="mensagem-contestacao" class="mensagem-retorno" aria-live="polite"></p>
+
+                </form>
+
+                <div class="historico-contestacoes">
+                    <h3>Minhas manifestações</h3>
+
+                    <div id="lista-contestacoes">
+                        <p class="historico-vazio">
+                            Nenhuma manifestação registrada.
+                        </p>
+                    </div>
+                </div>
+
+            </section>
+
             <div class="acoes-formulario">
                 <a href="../../index.html" class="botao-voltar">
-                    Voltar
+                    Voltar à página inicial
                 </a>
             </div>
 
         </section>
+
+        <p class="aviso-prototipo">
+            Este protótipo utiliza armazenamento local no navegador. As manifestações e autoavaliações são demonstrativas e ainda não são enviadas à coordenação ou ao professor.
+        </p>
 
     </main>
 

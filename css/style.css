@@ -731,3 +731,889 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ==========================================
+   AJUSTES COMPLEMENTARES DO PROTÓTIPO
+========================================== */
+
+
+/* Quatro perfis na página inicial */
+
+.perfis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+/* Avisos informativos do protótipo */
+
+.aviso-prototipo {
+    background-color: #eaf0f7;
+    border-left: 4px solid #2563a6;
+    color: #40536a;
+    padding: 15px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 20px 0 35px;
+}
+
+
+/* Distribuição por dimensão na coordenação */
+
+.distribuicao-dimensoes {
+    margin: 35px 0;
+}
+
+.distribuicao-dimensoes h2,
+.lista-registros-coordenacao h2 {
+    color: #1e3a5f;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.distribuicao-dimensoes>p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+#resumo-dimensoes-coordenacao {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.dimensao-resumo-card {
+    background-color: #f9fbfd;
+    border: 1px solid #d1d9e2;
+    border-radius: 8px;
+    padding: 18px;
+}
+
+.dimensao-resumo-card h3 {
+    color: #1e3a5f;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.dimensao-resumo-card p {
+    color: #555;
+    font-size: 14px;
+}
+
+
+/* Lista de registros */
+
+.lista-registros-coordenacao {
+    margin-top: 35px;
+}
+
+.lista-registros-coordenacao h2 {
+    margin-bottom: 20px;
+}
+
+
+/* Campos de formulário */
+
+.campo input,
+.campo select,
+.campo textarea {
+    max-width: 100%;
+}
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+input:focus-visible {
+    outline: 3px solid #78a9df;
+    outline-offset: 2px;
+}
+
+
+/* Responsividade */
+
+@media (max-width: 768px) {
+    .perfis {
+        grid-template-columns: 1fr;
+    }
+    #resumo-dimensoes-coordenacao {
+        grid-template-columns: 1fr;
+    }
+    .aviso-prototipo {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+
+/* ==========================================
+   ÁREA DO ESTUDANTE
+========================================== */
+
+.secao-estudante {
+    background-color: #ffffff;
+    border: 1px solid #dce3eb;
+    border-radius: 10px;
+    padding: 25px;
+    margin-top: 35px;
+}
+
+.secao-estudante h2 {
+    color: #1e3a5f;
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.secao-estudante h3 {
+    color: #1e3a5f;
+    font-size: 17px;
+    margin: 25px 0 15px;
+}
+
+.descricao-secao {
+    color: #626d7a;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.secao-estudante .campo {
+    margin-bottom: 18px;
+}
+
+.secao-estudante textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.secao-estudante textarea:focus,
+.secao-estudante select:focus {
+    outline: 2px solid #78a9df;
+    border-color: #2563a6;
+}
+
+.secao-estudante button {
+    background-color: #2563a6;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.secao-estudante button:hover {
+    background-color: #1e4775;
+}
+
+.mensagem-retorno {
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.mensagem-sucesso {
+    color: #247044;
+}
+
+.mensagem-erro {
+    color: #b42318;
+}
+
+.status-manifestacao {
+    color: #8a5a12;
+    font-weight: 600;
+}
+
+.historico-autoavaliacoes,
+.historico-contestacoes {
+    margin-top: 25px;
+}
+
+.secao-estudante .registro-card {
+    margin-bottom: 15px;
+}
+
+
+/* Responsividade da área do estudante */
+
+@media (max-width: 768px) {
+    .secao-estudante {
+        padding: 18px;
+    }
+    .secao-estudante button {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================
+   ÁREA DOS RESPONSÁVEIS
+========================================== */
+
+.selecao-responsavel {
+    background-color: #ffffff;
+    border: 1px solid #dce3eb;
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 30px;
+}
+
+.selecao-responsavel h2 {
+    color: #1e3a5f;
+    margin-bottom: 12px;
+}
+
+.secao-responsavel {
+    background-color: #ffffff;
+    border: 1px solid #dce3eb;
+    border-radius: 10px;
+    padding: 25px;
+    margin-top: 25px;
+}
+
+.secao-responsavel h2 {
+    color: #1e3a5f;
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.secao-responsavel h3 {
+    color: #1e3a5f;
+    font-size: 17px;
+    margin: 25px 0 15px;
+}
+
+.secao-responsavel .campo {
+    margin-bottom: 18px;
+}
+
+.secao-responsavel textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.secao-responsavel button {
+    background-color: #2563a6;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.secao-responsavel button:hover {
+    background-color: #1e4775;
+}
+
+.secao-responsavel .registro-card {
+    margin-bottom: 15px;
+}
+
+.historico-manifestacoes-responsavel {
+    margin-top: 25px;
+}
+
+@media (max-width: 768px) {
+    .secao-responsavel,
+    .selecao-responsavel {
+        padding: 18px;
+    }
+    .secao-responsavel button {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================
+   COMPLEMENTOS DO MÓDULO PROFESSOR
+========================================== */
+
+.secao-estudante {
+    margin-bottom: 25px;
+}
+
+.secao-estudante form {
+    margin-top: 20px;
+}
+
+.secao-estudante input,
+.secao-estudante select {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.secao-estudante textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.secao-estudante button {
+    background-color: #2563a6;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 18px;
+    cursor: pointer;
+}
+
+.secao-estudante button:hover {
+    background-color: #1e4775;
+}
+
+@media (max-width: 768px) {
+    .secao-estudante {
+        padding: 18px;
+    }
+    .secao-estudante button {
+        width: 100%;
+    }
+}
+
+
+/* Evolução temporal - Painel da Coordenação */
+
+.evolucao-temporal {
+    margin-top: 30px;
+    padding: 22px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.evolucao-temporal h2 {
+    margin-bottom: 8px;
+}
+
+.legenda-evolucao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin: 20px 0;
+    font-size: 14px;
+}
+
+.legenda-evolucao span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.legenda-cor {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border-radius: 3px;
+}
+
+.legenda-cor.positiva,
+.segmento-evolucao.positiva {
+    background-color: #2e9d68;
+}
+
+.legenda-cor.negativa,
+.segmento-evolucao.negativa {
+    background-color: #d9534f;
+}
+
+.legenda-cor.neutra,
+.segmento-evolucao.neutra {
+    background-color: #e0a52b;
+}
+
+.grafico-evolucao {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    min-height: 230px;
+    padding: 20px 10px 10px;
+    overflow-x: auto;
+    border-bottom: 1px solid #d9dfe7;
+}
+
+.coluna-evolucao {
+    min-width: 45px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.coluna-evolucao small {
+    font-size: 12px;
+    color: #555;
+}
+
+.barra-evolucao {
+    width: 100%;
+    max-width: 42px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    border-radius: 5px 5px 0 0;
+    background-color: #f0f2f5;
+}
+
+.segmento-evolucao {
+    width: 100%;
+    min-height: 2px;
+}
+
+.rotulo-evolucao {
+    font-size: 11px;
+    color: #555;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .evolucao-temporal {
+        padding: 15px;
+    }
+    .grafico-evolucao {
+        gap: 8px;
+    }
+    .coluna-evolucao {
+        min-width: 38px;
+    }
+    .rotulo-evolucao {
+        font-size: 10px;
+    }
+}
+
+
+/* ==========================================
+   SINAIS DE ATENÇÃO PEDAGÓGICA
+========================================== */
+
+.alertas-acompanhamento {
+    margin-top: 30px;
+    padding: 22px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.alertas-acompanhamento h2 {
+    color: #1e3a5f;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.alertas-acompanhamento>p {
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.aviso-alertas {
+    background-color: #fff8e8;
+    border-left: 4px solid #e0a52b;
+    color: #70551b;
+    padding: 13px 15px;
+    border-radius: 5px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.alerta-card {
+    background-color: #fffdf8;
+    border: 1px solid #ead9b5;
+    border-left: 4px solid #d69a25;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+.alerta-card h3 {
+    color: #1e3a5f;
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.alerta-card>p {
+    color: #555555;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.alerta-card .alerta-quantidade {
+    color: #9a6815;
+    font-weight: bold;
+}
+
+.alerta-card h4 {
+    color: #1e3a5f;
+    font-size: 14px;
+    margin: 18px 0 10px;
+}
+
+.lista-evidencias-alerta {
+    padding-left: 22px;
+    margin-bottom: 15px;
+}
+
+.lista-evidencias-alerta li {
+    color: #555555;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.alerta-card .orientacao-alerta {
+    background-color: #f3f6fa;
+    padding: 12px;
+    border-radius: 5px;
+    color: #40536a;
+    font-size: 13px;
+    margin-top: 12px;
+    margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+    .alertas-acompanhamento {
+        padding: 16px;
+    }
+    .alerta-card {
+        padding: 15px;
+    }
+}
+
+
+/* ==========================================
+   HISTÓRICO DE INTERVENÇÕES PEDAGÓGICAS
+========================================== */
+
+.intervencoes-acompanhamento {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: #ffffff;
+    border: 1px solid #edf0f4;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.intervencoes-acompanhamento h2 {
+    color: #1e3a5f;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.descricao-intervencoes {
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+}
+
+.intervencoes-acompanhamento form {
+    background-color: #f9fbfd;
+    border: 1px solid #dce3eb;
+    border-radius: 8px;
+    padding: 22px;
+}
+
+.intervencoes-acompanhamento .campo {
+    margin-bottom: 18px;
+}
+
+.intervencoes-acompanhamento .campo label {
+    color: #1e3a5f;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.intervencoes-acompanhamento .campo label span {
+    color: #777777;
+    font-weight: normal;
+}
+
+.intervencoes-acompanhamento input,
+.intervencoes-acompanhamento select,
+.intervencoes-acompanhamento textarea {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #333333;
+    box-sizing: border-box;
+}
+
+.intervencoes-acompanhamento textarea {
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.intervencoes-acompanhamento input:focus,
+.intervencoes-acompanhamento select:focus,
+.intervencoes-acompanhamento textarea:focus {
+    outline: 2px solid #78a9df;
+    border-color: #2563a6;
+}
+
+.intervencoes-acompanhamento .acoes-formulario {
+    margin-top: 10px;
+}
+
+.intervencoes-acompanhamento .botao-salvar {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.intervencoes-acompanhamento .botao-salvar:hover {
+    background-color: #28517f;
+}
+
+.historico-intervencoes {
+    margin-top: 30px;
+}
+
+.historico-intervencoes h3 {
+    color: #1e3a5f;
+    font-size: 18px;
+    margin-bottom: 18px;
+}
+
+.intervencao-card {
+    background-color: #f9fbfd;
+    border: 1px solid #d1d9e2;
+    border-left: 4px solid #2563a6;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+.intervencao-card h4 {
+    color: #1e3a5f;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.intervencao-card small {
+    display: block;
+    color: #777777;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.intervencao-card p {
+    color: #555555;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 8px 0 15px;
+    white-space: pre-wrap;
+}
+
+.intervencao-card strong {
+    display: block;
+    color: #1e3a5f;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    .intervencoes-acompanhamento {
+        padding: 16px;
+    }
+    .intervencoes-acompanhamento form {
+        padding: 15px;
+    }
+    .intervencoes-acompanhamento .botao-salvar {
+        width: 100%;
+    }
+    .intervencao-card {
+        padding: 15px;
+    }
+}
+
+
+/* ==========================================
+   ACOMPANHAMENTO DO CLIMA ESCOLAR
+========================================== */
+
+.clima-escolar {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: #ffffff;
+    border: 1px solid #edf0f4;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.clima-escolar h2 {
+    color: #1e3a5f;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.descricao-clima {
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.aviso-clima {
+    background-color: #eaf0f7;
+    border-left: 4px solid #2563a6;
+    color: #40536a;
+    padding: 13px 15px;
+    border-radius: 5px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+}
+
+.clima-escolar form {
+    background-color: #f9fbfd;
+    border: 1px solid #dce3eb;
+    border-radius: 8px;
+    padding: 22px;
+}
+
+.clima-escolar .campo {
+    margin-bottom: 18px;
+}
+
+.clima-escolar input,
+.clima-escolar textarea {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #333333;
+    box-sizing: border-box;
+}
+
+.clima-escolar textarea {
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.clima-escolar input:focus,
+.clima-escolar textarea:focus {
+    outline: 2px solid #78a9df;
+    border-color: #2563a6;
+}
+
+.clima-escolar .botao-salvar {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.clima-escolar .botao-salvar:hover {
+    background-color: #28517f;
+}
+
+.historico-clima {
+    margin-top: 30px;
+}
+
+.historico-clima h3 {
+    color: #1e3a5f;
+    font-size: 18px;
+    margin-bottom: 18px;
+}
+
+.clima-card {
+    background-color: #f9fbfd;
+    border: 1px solid #d1d9e2;
+    border-left: 4px solid #2563a6;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+.clima-card h4 {
+    color: #1e3a5f;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.clima-card small {
+    display: block;
+    color: #777777;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.clima-card p {
+    color: #555555;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 8px 0 15px;
+    white-space: pre-wrap;
+}
+
+.clima-card strong {
+    display: block;
+    color: #1e3a5f;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    .clima-escolar {
+        padding: 16px;
+    }
+    .clima-escolar form {
+        padding: 15px;
+    }
+    .clima-escolar .botao-salvar {
+        width: 100%;
+    }
+    .clima-card {
+        padding: 15px;
+    }
+}

@@ -4,16 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Painel da Coordenação | Avaliação Atitudinal</title>
-
-    <!-- Arquivo de estilização -->
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 
 <body>
 
-    <!-- Cabeçalho -->
     <header class="cabecalho">
         <div class="container">
             <h1>Sistema de Avaliação Atitudinal</h1>
@@ -21,18 +17,17 @@
         </div>
     </header>
 
-    <!-- Conteúdo principal -->
     <main class="container painel-coordenacao">
 
-        <!-- Apresentação -->
         <section class="apresentacao">
             <h2>Painel de Acompanhamento</h2>
             <p>
-                Consulte e acompanhe os registros de avaliação atitudinal realizados pelos professores.
+                Consulte os registros de avaliação atitudinal e acompanhe sua distribuição entre as dimensões e ao longo do tempo.
             </p>
         </section>
 
-        <!-- Indicadores gerais -->
+        <!-- INDICADORES GERAIS -->
+
         <section class="indicadores">
 
             <div class="indicador-card">
@@ -57,15 +52,14 @@
 
         </section>
 
-        <!-- Área de consulta -->
+        <!-- CONSULTA E FILTROS -->
+
         <section class="painel-registros">
 
             <div class="titulo-painel">
                 <div>
-                    <h2>Registros de Avaliação</h2>
-                    <p>
-                        Consulte os registros utilizando os filtros abaixo.
-                    </p>
+                    <h2>Consulta de registros</h2>
+                    <p>Utilize os filtros para localizar as observações.</p>
                 </div>
 
                 <span id="quantidade-filtrada" class="contador-registros">
@@ -73,24 +67,17 @@
                 </span>
             </div>
 
-            <!-- Filtros -->
             <div class="filtros">
 
-                <!-- Filtro por estudante -->
                 <div class="campo">
                     <label for="filtro-estudante">Estudante</label>
-
                     <select id="filtro-estudante">
                         <option value="">Todos os estudantes</option>
                     </select>
                 </div>
 
-                <!-- Filtro por dimensão -->
                 <div class="campo">
-                    <label for="filtro-dimensao">
-                        Dimensão Atitudinal
-                    </label>
-
+                    <label for="filtro-dimensao">Dimensão atitudinal</label>
                     <select id="filtro-dimensao">
                         <option value="">Todas as dimensões</option>
                         <option value="responsabilidade">Responsabilidade</option>
@@ -101,10 +88,8 @@
                     </select>
                 </div>
 
-                <!-- Filtro por tipo -->
                 <div class="campo">
-                    <label for="filtro-tipo">Tipo de Observação</label>
-
+                    <label for="filtro-tipo">Tipo de observação</label>
                     <select id="filtro-tipo">
                         <option value="">Todos os tipos</option>
                         <option value="positiva">Positiva</option>
@@ -113,27 +98,277 @@
                     </select>
                 </div>
 
+                <div class="campo">
+                    <label for="filtro-periodo">Período</label>
+                    <select id="filtro-periodo">
+                        <option value="">Todo o período</option>
+                        <option value="7">Últimos 7 dias</option>
+                        <option value="30">Últimos 30 dias</option>
+                        <option value="90">Últimos 90 dias</option>
+                    </select>
+                </div>
+
             </div>
 
-            <!-- Botão para limpar os filtros -->
             <div class="acoes-filtros">
                 <button type="button" id="limpar-filtros">
                     Limpar filtros
                 </button>
             </div>
 
-            <!-- Lista de registros -->
-            <div id="lista-coordenacao">
+            <!-- DISTRIBUIÇÃO POR DIMENSÃO -->
 
-                <p class="historico-vazio">
-                    Nenhum registro encontrado.
+            <section class="distribuicao-dimensoes">
+
+                <h2>Registros por dimensão</h2>
+
+                <p>
+                    Distribuição das observações conforme os filtros selecionados.
                 </p>
 
-            </div>
+                <div id="resumo-dimensoes-coordenacao"></div>
+
+            </section>
+
+            <!-- SINAIS DE ATENÇÃO -->
+
+            <section class="alertas-acompanhamento">
+
+                <h2>Sinais de atenção pedagógica</h2>
+
+                <p>
+                    Identificação de situações que podem merecer acompanhamento, com base na repetição de registros negativos recentes.
+                </p>
+
+                <div class="aviso-alertas">
+                    Os sinais apresentados não representam diagnósticos ou classificações dos estudantes. A análise pedagógica deve considerar o contexto de cada observação.
+                </div>
+
+                <div id="lista-alertas-coordenacao">
+                    <p class="historico-vazio">
+                        Nenhum sinal de atenção identificado.
+                    </p>
+                </div>
+
+            </section>
+
+
+            <!-- ACOMPANHAMENTO DO CLIMA ESCOLAR -->
+
+            <section class="clima-escolar">
+
+                <h2>Acompanhamento do clima escolar</h2>
+
+                <p class="descricao-clima">
+                    Registre percepções e situações relacionadas ao ambiente, ao bem-estar e à convivência escolar.
+                </p>
+
+                <div class="aviso-clima">
+                    Os registros são qualitativos e têm finalidade de acompanhamento pedagógico. Não representam notas ou índices de avaliação da escola.
+                </div>
+
+                <form id="form-clima-escolar">
+
+                    <div class="campo">
+                        <label for="clima-responsavel">
+                Profissional responsável
+            </label>
+
+                        <input type="text" id="clima-responsavel" placeholder="Nome do profissional" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="clima-data">
+                Data do registro
+            </label>
+
+                        <input type="date" id="clima-data" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="clima-contexto">
+                Contexto observado
+            </label>
+
+                        <input type="text" id="clima-contexto" placeholder="Ex.: ambiente escolar, espaço de convivência ou atividade" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="clima-descricao">
+                Percepção sobre o clima escolar
+            </label>
+
+                        <textarea id="clima-descricao" rows="4" placeholder="Descreva a situação observada, considerando o ambiente, o bem-estar e a convivência." required></textarea>
+                    </div>
+
+                    <div class="acoes-formulario">
+                        <button type="submit" class="botao-salvar">
+                Registrar observação
+            </button>
+                    </div>
+
+                    <p id="mensagem-clima" class="mensagem-retorno" aria-live="polite"></p>
+
+                </form>
+
+                <div class="historico-clima">
+
+                    <h3>Registros do clima escolar</h3>
+
+                    <div id="lista-clima-escolar">
+                        <p class="historico-vazio">
+                            Nenhum registro de clima escolar realizado.
+                        </p>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- HISTÓRICO DE INTERVENÇÕES -->
+
+            <section class="intervencoes-acompanhamento">
+
+                <h2>Histórico de intervenções pedagógicas</h2>
+
+                <p class="descricao-intervencoes">
+                    Registre as ações realizadas pela equipe pedagógica e acompanhe os encaminhamentos relacionados aos estudantes.
+                </p>
+
+                <form id="form-intervencao">
+
+                    <div class="campo">
+                        <label for="intervencao-estudante">
+                            Estudante
+                        </label>
+
+                        <select id="intervencao-estudante" required>
+                            <option value="">
+                                Selecione um estudante
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="intervencao-responsavel">
+                            Profissional responsável
+                        </label>
+
+                        <input type="text" id="intervencao-responsavel" placeholder="Nome do profissional" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="intervencao-data">
+                            Data da intervenção
+                        </label>
+
+                        <input type="date" id="intervencao-data" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="intervencao-descricao">
+                            Ação pedagógica realizada
+                        </label>
+
+                        <textarea id="intervencao-descricao" rows="4" placeholder="Descreva a ação realizada pela equipe pedagógica..." required></textarea>
+                    </div>
+
+                    <div class="campo">
+                        <label for="intervencao-resultado">
+                            Resultados ou encaminhamentos
+                            <span>(opcional)</span>
+                        </label>
+
+                        <textarea id="intervencao-resultado" rows="3" placeholder="Registre resultados observados ou próximos encaminhamentos..."></textarea>
+                    </div>
+
+                    <div class="acoes-formulario">
+                        <button type="submit" class="botao-salvar">
+                            Registrar intervenção
+                        </button>
+                    </div>
+
+                    <p id="mensagem-intervencao" class="mensagem-retorno" aria-live="polite"></p>
+
+                </form>
+
+                <div class="historico-intervencoes">
+
+                    <h3>Intervenções registradas</h3>
+
+                    <div id="lista-intervencoes">
+                        <p class="historico-vazio">
+                            Nenhuma intervenção registrada.
+                        </p>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- EVOLUÇÃO TEMPORAL -->
+
+            <section class="evolucao-temporal">
+
+                <h2>Evolução temporal dos registros</h2>
+
+                <p>
+                    Acompanhe a distribuição das observações positivas, negativas e neutras ao longo do tempo.
+                </p>
+
+                <div class="legenda-evolucao">
+
+                    <span>
+                        <i class="legenda-cor positiva"></i>
+                        Positivas
+                    </span>
+
+                    <span>
+                        <i class="legenda-cor negativa"></i>
+                        Negativas
+                    </span>
+
+                    <span>
+                        <i class="legenda-cor neutra"></i>
+                        Neutras
+                    </span>
+
+                </div>
+
+                <div id="grafico-evolucao" class="grafico-evolucao">
+
+                    <p class="historico-vazio">
+                        Ainda não há registros suficientes para exibir a evolução.
+                    </p>
+
+                </div>
+
+            </section>
+
+            <!-- REGISTROS ENCONTRADOS -->
+
+            <section class="lista-registros-coordenacao">
+
+                <h2>Registros encontrados</h2>
+
+                <div id="lista-coordenacao">
+
+                    <p class="historico-vazio">
+                        Nenhum registro encontrado.
+                    </p>
+
+                </div>
+
+            </section>
 
         </section>
 
-        <!-- Navegação -->
+        <p class="aviso-prototipo">
+            Os indicadores representam registros de observações, não notas ou classificações dos estudantes. Os sinais de atenção são indicativos para análise pedagógica, não diagnósticos. Dados de frequência e desempenho não estão simulados neste protótipo. As intervenções
+            são armazenadas localmente neste navegador.
+        </p>
+
         <div class="navegacao-painel">
             <a href="../../index.html" class="botao-voltar">
                 ← Voltar à página inicial
@@ -142,12 +377,10 @@
 
     </main>
 
-    <!-- Rodapé -->
     <footer class="rodape">
         <p>Sistema de Avaliação Atitudinal</p>
     </footer>
 
-    <!-- JavaScript da coordenação -->
     <script src="../../js/coordenacao.js"></script>
 
 </body>

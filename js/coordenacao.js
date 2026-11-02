@@ -1,295 +1,1125 @@
 // ==========================================
-// 1. RECUPERAÇÃO DOS REGISTROS
+// CONFIGURAÇÕES DO PAINEL DA COORDENAÇÃO
 // ==========================================
 
-// Recupera os dados armazenados pelo professor
-let registros = JSON.parse(
-    localStorage.getItem("registrosAtitudinais")
-) || [];
+const dimensoes = [
+    { valor: "responsabilidade", nome: "Responsabilidade" },
+    { valor: "colaboracao", nome: "Colaboração" },
+    { valor: "autonomia", nome: "Autonomia" },
+    { valor: "participacao", nome: "Participação" },
+    { valor: "respeito", nome: "Respeito e convivência" }
+];
 
+const tipos = {
+    positiva: "Positiva",
+    negativa: "Negativa",
+    neutra: "Neutra"
+};
 
 // ==========================================
-// 2. LOCALIZAÇÃO DOS ELEMENTOS HTML
+// ELEMENTOS HTML
 // ==========================================
 
-// Indicadores
 const totalRegistros = document.getElementById("total-registros");
 const totalPositivas = document.getElementById("total-positivas");
 const totalNegativas = document.getElementById("total-negativas");
 const totalNeutras = document.getElementById("total-neutras");
 
-// Filtros
 const filtroEstudante = document.getElementById("filtro-estudante");
 const filtroDimensao = document.getElementById("filtro-dimensao");
 const filtroTipo = document.getElementById("filtro-tipo");
+const filtroPeriodo = document.getElementById("filtro-periodo");
 
-// Outros elementos
 const listaCoordenacao = document.getElementById("lista-coordenacao");
 const quantidadeFiltrada = document.getElementById("quantidade-filtrada");
+const resumoDimensoes = document.getElementById("resumo-dimensoes-coordenacao");
 const botaoLimparFiltros = document.getElementById("limpar-filtros");
 
+const graficoEvolucao = document.getElementById("grafico-evolucao");
+const listaAlertas = document.getElementById("lista-alertas-coordenacao");
+
+// Intervenções
+const formularioIntervencao = document.getElementById("form-intervencao");
+const seletorEstudanteIntervencao = document.getElementById("intervencao-estudante");
+const campoResponsavelIntervencao = document.getElementById("intervencao-responsavel");
+const campoDataIntervencao = document.getElementById("intervencao-data");
+const campoDescricaoIntervencao = document.getElementById("intervencao-descricao");
+const campoResultadoIntervencao = document.getElementById("intervencao-resultado");
+const listaIntervencoes = document.getElementById("lista-intervencoes");
+const mensagemIntervencao = document.getElementById("mensagem-intervencao");
+
+// Clima escolar
+const formularioClima = document.getElementById("form-clima-escolar");
+const campoResponsavelClima = document.getElementById("clima-responsavel");
+const campoDataClima = document.getElementById("clima-data");
+const campoContextoClima = document.getElementById("clima-contexto");
+const campoDescricaoClima = document.getElementById("clima-descricao");
+const listaClimaEscolar = document.getElementById("lista-clima-escolar");
+const mensagemClima = document.getElementById("mensagem-clima");
 
 // ==========================================
-// 3. TRADUÇÃO DOS VALORES PARA EXIBIÇÃO
+// ARMAZENAMENTO
 // ==========================================
 
-function obterNomeDimensao(dimensao) {
-
-    const dimensoes = {
-        responsabilidade: "Responsabilidade",
-        colaboracao: "Colaboração",
-        autonomia: "Autonomia",
-        participacao: "Participação",
-        respeito: "Respeito e convivência"
-    };
-
-    return dimensoes[dimensao] || dimensao;
+function recuperarDados(chave) {
+    try {
+        const dados = JSON.parse(localStorage.getItem(chave)) || [];
+        return Array.isArray(dados) ? dados : [];
+    } catch (erro) {
+        console.error("Erro ao recuperar " + chave + ":", erro);
+        return [];
+    }
 }
 
-
-function obterNomeTipo(tipo) {
-
-    const tipos = {
-        positiva: "Positiva",
-        negativa: "Negativa",
-        neutra: "Neutra"
-    };
-
-    return tipos[tipo] || tipo;
+function salvarDados(chave, dados) {
+    try {
+        localStorage.setItem(chave, JSON.stringify(dados));
+        return true;
+    } catch (erro) {
+        console.error("Erro ao salvar " + chave + ":", erro);
+        return false;
+    }
 }
 
+let registros = recuperarDados("registrosAtitudinais");
+let intervencoes = recuperarDados("intervencoesAtitudinais");
+let registrosClima = recuperarDados("climaEscolarAtitudinal");
+let auditoria = recuperarDados("auditoriaAtitudinal");
 
 // ==========================================
-// 4. PREENCHIMENTO DO FILTRO DE ESTUDANTES
+// AUDITORIA DA COORDENAÇÃO
+// ==========================================
+
+function registrarAuditoria(acao, responsavel, estudante, detalhes, registroRelacionado) {
+    auditoria = recuperarDados("auditoriaAtitudinal");
+
+    const agora = new Date();
+
+    const evento = {
+        id: agora.getTime().toString() +
+            Math.random().toString(16).slice(2),
+        perfil: "coordenacao",
+        modulo: "Área da Coordenação",
+        acao: acao,
+        responsavel: responsavel || "Profissional não identificado",
+        estudante: estudante || "Não aplicável",
+        detalhes: detalhes || "",
+        registroRelacionado: registroRelacionado || null,
+        data: agora.toLocaleString("pt-BR"),
+        timestamp: agora.getTime()
+    };
+
+    auditoria.push(evento);
+
+    const salvou = salvarDados("auditoriaAtitudinal", auditoria);
+
+    if (!salvou) {
+        console.error("Não foi possível registrar a ação na auditoria.");
+        return false;
+    }
+
+    return true;
+}
+
+// ==========================================
+// FUNÇÕES AUXILIARES
+// ==========================================
+
+// CORREÇÃO: permite adicionar várias classes CSS
+// separadas por espaço, sem gerar InvalidCharacterError.
+
+function criarElemento(tag, classe, texto) {
+    const elemento = document.createElement(tag);
+
+    if (classe) {
+        classe.split(/\s+/).forEach(nomeClasse => {
+            if (nomeClasse) {
+                elemento.classList.add(nomeClasse);
+            }
+        });
+    }
+
+    if (texto !== undefined) {
+        elemento.textContent = texto;
+    }
+
+    return elemento;
+}
+
+function mostrarMensagem(elemento, mensagem, sucesso) {
+    elemento.textContent = mensagem;
+
+    elemento.classList.remove(
+        "mensagem-sucesso",
+        "mensagem-erro"
+    );
+
+    elemento.classList.add(
+        sucesso ? "mensagem-sucesso" : "mensagem-erro"
+    );
+}
+
+function obterNomeDimensao(valor) {
+    const dimensao = dimensoes.find(item => item.valor === valor);
+    return dimensao ? dimensao.nome : valor || "Não informada";
+}
+
+function obterDataRegistro(registro) {
+    if (registro.timestamp) {
+        const data = new Date(Number(registro.timestamp));
+
+        if (!Number.isNaN(data.getTime())) {
+            return data;
+        }
+    }
+
+    if (registro.data) {
+        const partes = registro.data.match(
+            /^(\d{2})\/(\d{2})\/(\d{4})/
+        );
+
+        if (partes) {
+            return new Date(
+                Number(partes[3]),
+                Number(partes[2]) - 1,
+                Number(partes[1])
+            );
+        }
+    }
+
+    return null;
+}
+
+function obterDataLocalISO() {
+    const hoje = new Date();
+
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoje.getDate()).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+}
+
+function formatarDataISO(dataISO) {
+    if (!dataISO) return "Data não informada";
+
+    const partes = dataISO.split("-");
+
+    if (partes.length !== 3) return dataISO;
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+// ==========================================
+// CARREGAMENTO DOS ESTUDANTES
 // ==========================================
 
 function carregarEstudantes() {
+    const estudanteSelecionado = filtroEstudante.value;
+    const estudanteIntervencaoSelecionado =
+        seletorEstudanteIntervencao.value;
 
-    // Obtém os nomes dos estudantes sem repetições
-    const estudantes = [
-        ...new Set(registros.map(function(registro) {
-            return registro.estudante;
-        }))
-    ];
+    const estudantes = [...new Set([
+        ...registros.map(item => item.estudante),
+        ...intervencoes.map(item => item.estudante)
+    ].filter(Boolean))].sort();
 
-    // Organiza os nomes em ordem alfabética
-    estudantes.sort();
+    filtroEstudante.innerHTML =
+        '<option value="">Todos os estudantes</option>';
 
-    // Adiciona cada estudante ao filtro
-    estudantes.forEach(function(estudante) {
+    seletorEstudanteIntervencao.innerHTML =
+        '<option value="">Selecione um estudante</option>';
 
-        const opcao = document.createElement("option");
+    estudantes.forEach(estudante => {
+        const opcaoFiltro = document.createElement("option");
+        opcaoFiltro.value = estudante;
+        opcaoFiltro.textContent = estudante;
+        filtroEstudante.appendChild(opcaoFiltro);
 
-        opcao.value = estudante;
-        opcao.textContent = estudante;
-
-        filtroEstudante.appendChild(opcao);
-
+        const opcaoIntervencao = document.createElement("option");
+        opcaoIntervencao.value = estudante;
+        opcaoIntervencao.textContent = estudante;
+        seletorEstudanteIntervencao.appendChild(opcaoIntervencao);
     });
 
+    if (estudantes.includes(estudanteSelecionado)) {
+        filtroEstudante.value = estudanteSelecionado;
+    }
+
+    if (estudantes.includes(estudanteIntervencaoSelecionado)) {
+        seletorEstudanteIntervencao.value =
+            estudanteIntervencaoSelecionado;
+    }
 }
 
-
 // ==========================================
-// 5. ATUALIZAÇÃO DOS INDICADORES
+// INDICADORES
 // ==========================================
 
 function atualizarIndicadores() {
-
-    // Quantidade total de registros
     totalRegistros.textContent = registros.length;
 
-    // Quantidade de observações positivas
-    const positivas = registros.filter(function(registro) {
-        return registro.tipo === "positiva";
-    });
+    totalPositivas.textContent = registros.filter(
+        item => item.tipo === "positiva"
+    ).length;
 
-    totalPositivas.textContent = positivas.length;
+    totalNegativas.textContent = registros.filter(
+        item => item.tipo === "negativa"
+    ).length;
 
-    // Quantidade de observações negativas
-    const negativas = registros.filter(function(registro) {
-        return registro.tipo === "negativa";
-    });
-
-    totalNegativas.textContent = negativas.length;
-
-    // Quantidade de observações neutras
-    const neutras = registros.filter(function(registro) {
-        return registro.tipo === "neutra";
-    });
-
-    totalNeutras.textContent = neutras.length;
-
+    totalNeutras.textContent = registros.filter(
+        item => item.tipo === "neutra"
+    ).length;
 }
 
-
 // ==========================================
-// 6. FILTRAGEM DOS REGISTROS
+// FILTROS
 // ==========================================
 
 function filtrarRegistros() {
+    const estudante = filtroEstudante.value;
+    const dimensao = filtroDimensao.value;
+    const tipo = filtroTipo.value;
+    const periodo = Number(filtroPeriodo.value);
 
-    // Recupera os valores selecionados
-    const estudanteSelecionado = filtroEstudante.value;
-    const dimensaoSelecionada = filtroDimensao.value;
-    const tipoSelecionado = filtroTipo.value;
+    return registros.filter(registro => {
+        const correspondeEstudante = !estudante || registro.estudante === estudante;
 
-    // Aplica os filtros aos registros
-    const registrosFiltrados = registros.filter(function(registro) {
+        const correspondeDimensao = !dimensao || registro.dimensao === dimensao;
 
-        const correspondeEstudante =
-            estudanteSelecionado === "" ||
-            registro.estudante === estudanteSelecionado;
+        const correspondeTipo = !tipo || registro.tipo === tipo;
 
-        const correspondeDimensao =
-            dimensaoSelecionada === "" ||
-            registro.dimensao === dimensaoSelecionada;
+        let correspondePeriodo = true;
 
-        const correspondeTipo =
-            tipoSelecionado === "" ||
-            registro.tipo === tipoSelecionado;
+        if (periodo) {
+            const dataRegistro = obterDataRegistro(registro);
 
-        // O registro precisa atender a todos os filtros selecionados
+            if (!dataRegistro) {
+                correspondePeriodo = false;
+            } else {
+                const limite = new Date();
+                limite.setHours(0, 0, 0, 0);
+                limite.setDate(limite.getDate() - (periodo - 1));
+
+                correspondePeriodo = dataRegistro >= limite;
+            }
+        }
+
         return correspondeEstudante &&
             correspondeDimensao &&
-            correspondeTipo;
-
+            correspondeTipo &&
+            correspondePeriodo;
     });
-
-    return registrosFiltrados;
-
 }
 
+// ==========================================
+// DISTRIBUIÇÃO POR DIMENSÃO
+// ==========================================
+
+function exibirResumoDimensoes(registrosFiltrados) {
+    resumoDimensoes.innerHTML = "";
+
+    dimensoes.forEach(dimensao => {
+        const quantidade = registrosFiltrados.filter(
+            registro => registro.dimensao === dimensao.valor
+        ).length;
+
+        const cartao = criarElemento("article", "dimensao-resumo-card");
+
+        cartao.appendChild(
+            criarElemento("h3", "", dimensao.nome)
+        );
+
+        cartao.appendChild(
+            criarElemento("p", "", quantidade + " registro(s)")
+        );
+
+        resumoDimensoes.appendChild(cartao);
+    });
+}
 
 // ==========================================
-// 7. EXIBIÇÃO DOS REGISTROS
+// EVOLUÇÃO TEMPORAL
 // ==========================================
 
-function exibirRegistros() {
+function formatarDataChave(data) {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const dia = String(data.getDate()).padStart(2, "0");
 
-    // Limpa a lista antes de apresentar os resultados
-    listaCoordenacao.innerHTML = "";
+    return `${ano}-${mes}-${dia}`;
+}
 
-    // Obtém os registros filtrados
-    const registrosFiltrados = filtrarRegistros();
+function obterInicioSemana(data) {
+    const inicio = new Date(data);
+    inicio.setHours(0, 0, 0, 0);
 
-    // Atualiza o contador de resultados
-    quantidadeFiltrada.textContent =
-        registrosFiltrados.length +
-        (registrosFiltrados.length === 1 ? " registro" : " registros");
+    const diaSemana = inicio.getDay();
+    const diferenca = diaSemana === 0 ? 6 : diaSemana - 1;
 
-    // Verifica se existem registros
-    if (registrosFiltrados.length === 0) {
+    inicio.setDate(inicio.getDate() - diferenca);
 
-        const mensagem = document.createElement("p");
+    return inicio;
+}
 
-        mensagem.textContent =
-            "Nenhum registro encontrado para os filtros selecionados.";
+function obterChavePeriodo(data, periodo) {
+    if (periodo === 7 || periodo === 30) {
+        return formatarDataChave(data);
+    }
 
-        mensagem.classList.add("historico-vazio");
+    if (periodo === 90) {
+        return formatarDataChave(obterInicioSemana(data));
+    }
 
-        listaCoordenacao.appendChild(mensagem);
+    return `${data.getFullYear()}-${String(
+        data.getMonth() + 1
+    ).padStart(2, "0")}`;
+}
 
+function avancarPeriodo(data, periodo) {
+    const proxima = new Date(data);
+
+    if (periodo === 7 || periodo === 30) {
+        proxima.setDate(proxima.getDate() + 1);
+    } else if (periodo === 90) {
+        proxima.setDate(proxima.getDate() + 7);
+    } else {
+        proxima.setMonth(proxima.getMonth() + 1);
+    }
+
+    return proxima;
+}
+
+function formatarRotuloPeriodo(data, periodo) {
+    if (periodo === 7 || periodo === 30 || periodo === 90) {
+        return data.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit"
+        });
+    }
+
+    return data.toLocaleDateString("pt-BR", {
+        month: "short",
+        year: "2-digit"
+    });
+}
+
+function exibirEvolucaoTemporal(registrosFiltrados) {
+    graficoEvolucao.innerHTML = "";
+
+    const registrosComData = registrosFiltrados
+        .map(registro => ({
+            ...registro,
+            dataRegistro: obterDataRegistro(registro)
+        }))
+        .filter(registro => registro.dataRegistro !== null);
+
+    if (registrosComData.length === 0) {
+        graficoEvolucao.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Não há registros com datas válidas para exibir neste período."
+            )
+        );
         return;
     }
 
-    // Percorre os registros encontrados
-    registrosFiltrados.forEach(function(registro) {
+    const periodo = Number(filtroPeriodo.value);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
 
-        // Cria o cartão
-        const cartao = document.createElement("article");
+    let inicio;
 
-        cartao.classList.add("registro-card");
+    if (periodo === 7 || periodo === 30 || periodo === 90) {
+        inicio = new Date(hoje);
+        inicio.setDate(inicio.getDate() - (periodo - 1));
 
-        // Nome do estudante
-        const estudante = document.createElement("h3");
+        if (periodo === 90) {
+            inicio = obterInicioSemana(inicio);
+        }
+    } else {
+        const datas = registrosComData.map(
+            registro => registro.dataRegistro
+        );
 
-        estudante.textContent = registro.estudante;
+        const menorData = new Date(
+            Math.min(...datas.map(data => data.getTime()))
+        );
 
-        // Dimensão atitudinal
-        const dimensao = document.createElement("p");
+        inicio = new Date(
+            menorData.getFullYear(),
+            menorData.getMonth(),
+            1
+        );
+    }
 
-        dimensao.textContent =
-            "Dimensão: " + obterNomeDimensao(registro.dimensao);
+    const agrupamentos = new Map();
+    let dataAtual = new Date(inicio);
 
-        // Tipo de observação
-        const tipo = document.createElement("p");
+    while (dataAtual <= hoje) {
+        const chave = obterChavePeriodo(dataAtual, periodo);
 
-        tipo.textContent =
-            "Tipo: " + obterNomeTipo(registro.tipo);
+        agrupamentos.set(chave, {
+            data: new Date(dataAtual),
+            positiva: 0,
+            negativa: 0,
+            neutra: 0
+        });
 
-        // Aplica uma identificação visual ao tipo
-        tipo.classList.add("tipo-" + registro.tipo);
+        dataAtual = avancarPeriodo(dataAtual, periodo);
+    }
 
-        // Observação qualitativa
-        const observacao = document.createElement("p");
+    registrosComData.forEach(registro => {
+        const chave = obterChavePeriodo(
+            registro.dataRegistro,
+            periodo
+        );
 
-        observacao.textContent =
-            "Observação: " +
-            (registro.observacao || "Não informada.");
+        if (agrupamentos.has(chave)) {
+            const grupo = agrupamentos.get(chave);
 
-        // Data do registro
-        const data = document.createElement("small");
-
-        data.textContent =
-            "Data: " + (registro.data || "Não informada");
-
-        // Adiciona os elementos ao cartão
-        cartao.appendChild(estudante);
-        cartao.appendChild(dimensao);
-        cartao.appendChild(tipo);
-        cartao.appendChild(observacao);
-        cartao.appendChild(data);
-
-        // Adiciona o cartão à página
-        listaCoordenacao.appendChild(cartao);
-
+            if (grupo[registro.tipo] !== undefined) {
+                grupo[registro.tipo]++;
+            }
+        }
     });
 
+    const grupos = [...agrupamentos.values()];
+
+    const maiorTotal = Math.max(
+        ...grupos.map(grupo =>
+            grupo.positiva + grupo.negativa + grupo.neutra
+        ),
+        1
+    );
+
+    grupos.forEach(grupo => {
+        const total =
+            grupo.positiva + grupo.negativa + grupo.neutra;
+
+        const coluna = criarElemento("div", "coluna-evolucao");
+        const quantidade = criarElemento("small", "", total);
+        const barra = criarElemento("div", "barra-evolucao");
+
+        barra.style.height =
+            Math.max((total / maiorTotal) * 180, total > 0 ? 4 : 0) + "px";
+
+        [
+            { tipo: "positiva", quantidade: grupo.positiva },
+            { tipo: "neutra", quantidade: grupo.neutra },
+            { tipo: "negativa", quantidade: grupo.negativa }
+        ].forEach(segmento => {
+            if (segmento.quantidade === 0) return;
+
+            const parte = criarElemento(
+                "div",
+                "segmento-evolucao " + segmento.tipo
+            );
+
+            parte.style.flexGrow = segmento.quantidade;
+            parte.title = segmento.tipo + ": " + segmento.quantidade;
+
+            barra.appendChild(parte);
+        });
+
+        const rotulo = criarElemento(
+            "span",
+            "rotulo-evolucao",
+            formatarRotuloPeriodo(grupo.data, periodo)
+        );
+
+        coluna.append(quantidade, barra, rotulo);
+        graficoEvolucao.appendChild(coluna);
+    });
 }
 
+// ==========================================
+// SINAIS DE ATENÇÃO PEDAGÓGICA
+// ==========================================
+
+function exibirAlertasAcompanhamento() {
+    listaAlertas.innerHTML = "";
+
+    const agora = new Date();
+    const limite = new Date(agora);
+
+    limite.setHours(0, 0, 0, 0);
+    limite.setDate(limite.getDate() - 6);
+
+    const registrosNegativos = registros.filter(registro => {
+        if (registro.tipo !== "negativa") return false;
+        if (!registro.estudante || !registro.dimensao) return false;
+
+        const dataRegistro = obterDataRegistro(registro);
+
+        return dataRegistro &&
+            dataRegistro >= limite &&
+            dataRegistro <= agora;
+    });
+
+    const agrupamentos = new Map();
+
+    registrosNegativos.forEach(registro => {
+        const chave = JSON.stringify([
+            registro.estudante,
+            registro.dimensao
+        ]);
+
+        if (!agrupamentos.has(chave)) {
+            agrupamentos.set(chave, []);
+        }
+
+        agrupamentos.get(chave).push(registro);
+    });
+
+    const alertas = [...agrupamentos.entries()]
+        .filter(([chave, ocorrencias]) => ocorrencias.length >= 2)
+        .map(([chave, ocorrencias]) => {
+            const identificacao = JSON.parse(chave);
+
+            return {
+                estudante: identificacao[0],
+                dimensao: identificacao[1],
+                ocorrencias: ocorrencias.sort(
+                    (a, b) => obterDataRegistro(b) - obterDataRegistro(a)
+                )
+            };
+        })
+        .sort((a, b) => b.ocorrencias.length - a.ocorrencias.length);
+
+    if (alertas.length === 0) {
+        listaAlertas.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Nenhum sinal de atenção identificado nos últimos sete dias."
+            )
+        );
+        return;
+    }
+
+    alertas.forEach(alerta => {
+        const cartao = criarElemento("article", "alerta-card");
+
+        cartao.appendChild(
+            criarElemento("h3", "", alerta.estudante)
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Dimensão: " + obterNomeDimensao(alerta.dimensao)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "alerta-quantidade",
+                alerta.ocorrencias.length +
+                " registros negativos nos últimos sete dias"
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento("h4", "", "Registros que originaram o sinal")
+        );
+
+        const listaEvidencias = criarElemento(
+            "ul",
+            "lista-evidencias-alerta"
+        );
+
+        alerta.ocorrencias.forEach(registro => {
+            const data = obterDataRegistro(registro);
+
+            const dataFormatada = data ?
+                data.toLocaleDateString("pt-BR") :
+                "Data não informada";
+
+            const observacao = registro.observacao ||
+                "Observação qualitativa não informada.";
+
+            listaEvidencias.appendChild(
+                criarElemento(
+                    "li",
+                    "",
+                    dataFormatada + " — " + observacao
+                )
+            );
+        });
+
+        cartao.appendChild(listaEvidencias);
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "orientacao-alerta",
+                "Recomenda-se consultar as evidências e avaliar o contexto antes de qualquer encaminhamento."
+            )
+        );
+
+        listaAlertas.appendChild(cartao);
+    });
+}
 
 // ==========================================
-// 8. LIMPEZA DOS FILTROS
+// HISTÓRICO DE INTERVENÇÕES
+// ==========================================
+
+function salvarIntervencoes() {
+    return salvarDados("intervencoesAtitudinais", intervencoes);
+}
+
+function registrarIntervencao(evento) {
+    evento.preventDefault();
+
+    const estudante = seletorEstudanteIntervencao.value.trim();
+    const responsavel = campoResponsavelIntervencao.value.trim();
+    const data = campoDataIntervencao.value;
+    const descricao = campoDescricaoIntervencao.value.trim();
+    const resultado = campoResultadoIntervencao.value.trim();
+
+    if (!estudante || !responsavel || !data || !descricao) {
+        mostrarMensagem(
+            mensagemIntervencao,
+            "Preencha os campos obrigatórios.",
+            false
+        );
+        return;
+    }
+
+    if (data > obterDataLocalISO()) {
+        mostrarMensagem(
+            mensagemIntervencao,
+            "A data da intervenção não pode ser futura.",
+            false
+        );
+        return;
+    }
+
+    const novaIntervencao = {
+        id: Date.now().toString(),
+        estudante,
+        responsavel,
+        data,
+        descricao,
+        resultado,
+        timestamp: new Date(data + "T12:00:00").getTime()
+    };
+
+    intervencoes.push(novaIntervencao);
+
+    if (!salvarIntervencoes()) {
+        intervencoes.pop();
+
+        mostrarMensagem(
+            mensagemIntervencao,
+            "Não foi possível salvar a intervenção.",
+            false
+        );
+        return;
+    }
+
+    const auditoriaSalva = registrarAuditoria(
+        "Registro de intervenção pedagógica",
+        responsavel,
+        estudante,
+        "Intervenção pedagógica registrada.",
+        novaIntervencao.id
+    );
+
+    exibirIntervencoes();
+
+    formularioIntervencao.reset();
+
+    carregarEstudantes();
+
+    seletorEstudanteIntervencao.value = estudante;
+
+    campoDataIntervencao.value = obterDataLocalISO();
+
+    if (auditoriaSalva) {
+        mostrarMensagem(
+            mensagemIntervencao,
+            "Intervenção registrada com sucesso!",
+            true
+        );
+    } else {
+        mostrarMensagem(
+            mensagemIntervencao,
+            "Intervenção salva, mas não foi possível registrar sua auditoria.",
+            false
+        );
+    }
+}
+
+function exibirIntervencoes() {
+    listaIntervencoes.innerHTML = "";
+
+    intervencoes = recuperarDados("intervencoesAtitudinais");
+
+    const ordenadas = intervencoes.slice().sort(
+        (a, b) => b.data.localeCompare(a.data)
+    );
+
+    if (ordenadas.length === 0) {
+        listaIntervencoes.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Nenhuma intervenção registrada."
+            )
+        );
+        return;
+    }
+
+    ordenadas.forEach(intervencao => {
+        const cartao = criarElemento("article", "intervencao-card");
+
+        cartao.appendChild(
+            criarElemento("h4", "", intervencao.estudante)
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "small",
+                "",
+                "Data: " + formatarDataISO(intervencao.data)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Profissional responsável: " + intervencao.responsavel
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento("strong", "", "Ação pedagógica realizada")
+        );
+
+        cartao.appendChild(
+            criarElemento("p", "", intervencao.descricao)
+        );
+
+        if (intervencao.resultado) {
+            cartao.appendChild(
+                criarElemento("strong", "", "Resultados ou encaminhamentos")
+            );
+
+            cartao.appendChild(
+                criarElemento("p", "", intervencao.resultado)
+            );
+        }
+
+        listaIntervencoes.appendChild(cartao);
+    });
+}
+
+// ==========================================
+// ACOMPANHAMENTO DO CLIMA ESCOLAR
+// ==========================================
+
+function salvarRegistrosClima() {
+    return salvarDados("climaEscolarAtitudinal", registrosClima);
+}
+
+function registrarClimaEscolar(evento) {
+    evento.preventDefault();
+
+    const responsavel = campoResponsavelClima.value.trim();
+    const data = campoDataClima.value;
+    const contexto = campoContextoClima.value.trim();
+    const descricao = campoDescricaoClima.value.trim();
+
+    if (!responsavel || !data || !contexto || !descricao) {
+        mostrarMensagem(
+            mensagemClima,
+            "Preencha todos os campos obrigatórios.",
+            false
+        );
+        return;
+    }
+
+    if (data > obterDataLocalISO()) {
+        mostrarMensagem(
+            mensagemClima,
+            "A data do registro não pode ser futura.",
+            false
+        );
+        return;
+    }
+
+    const novoRegistro = {
+        id: Date.now().toString(),
+        responsavel,
+        data,
+        contexto,
+        descricao,
+        timestamp: new Date(data + "T12:00:00").getTime()
+    };
+
+    registrosClima.push(novoRegistro);
+
+    if (!salvarRegistrosClima()) {
+        registrosClima.pop();
+
+        mostrarMensagem(
+            mensagemClima,
+            "Não foi possível salvar o registro.",
+            false
+        );
+        return;
+    }
+
+    const auditoriaSalva = registrarAuditoria(
+        "Registro de observação do clima escolar",
+        responsavel,
+        null,
+        "Contexto observado: " + contexto + ".",
+        novoRegistro.id
+    );
+
+    exibirRegistrosClima();
+
+    formularioClima.reset();
+
+    campoDataClima.value = obterDataLocalISO();
+
+    if (auditoriaSalva) {
+        mostrarMensagem(
+            mensagemClima,
+            "Observação sobre o clima escolar registrada com sucesso.",
+            true
+        );
+    } else {
+        mostrarMensagem(
+            mensagemClima,
+            "Registro salvo, mas não foi possível registrar sua auditoria.",
+            false
+        );
+    }
+}
+
+function exibirRegistrosClima() {
+    listaClimaEscolar.innerHTML = "";
+
+    registrosClima = recuperarDados("climaEscolarAtitudinal");
+
+    const ordenados = registrosClima.slice().sort(
+        (a, b) => b.data.localeCompare(a.data)
+    );
+
+    if (ordenados.length === 0) {
+        listaClimaEscolar.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Nenhum registro de clima escolar realizado."
+            )
+        );
+        return;
+    }
+
+    ordenados.forEach(registro => {
+        const cartao = criarElemento("article", "clima-card");
+
+        cartao.appendChild(
+            criarElemento("h4", "", registro.contexto)
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "small",
+                "",
+                "Data: " + formatarDataISO(registro.data)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Profissional responsável: " + registro.responsavel
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento("strong", "", "Percepção registrada")
+        );
+
+        cartao.appendChild(
+            criarElemento("p", "", registro.descricao)
+        );
+
+        listaClimaEscolar.appendChild(cartao);
+    });
+}
+
+// ==========================================
+// REGISTROS ENCONTRADOS
+// ==========================================
+
+function exibirRegistros() {
+    registros = recuperarDados("registrosAtitudinais");
+
+    listaCoordenacao.innerHTML = "";
+
+    const encontrados = filtrarRegistros();
+
+    quantidadeFiltrada.textContent =
+        encontrados.length +
+        (encontrados.length === 1 ? " registro" : " registros");
+
+    exibirResumoDimensoes(encontrados);
+    exibirAlertasAcompanhamento();
+    exibirEvolucaoTemporal(encontrados);
+
+    if (encontrados.length === 0) {
+        listaCoordenacao.appendChild(
+            criarElemento(
+                "p",
+                "historico-vazio",
+                "Nenhum registro encontrado para os filtros selecionados."
+            )
+        );
+        return;
+    }
+
+    encontrados.slice().reverse().forEach(registro => {
+        const cartao = criarElemento("article", "registro-card");
+
+        cartao.appendChild(
+            criarElemento(
+                "h3",
+                "",
+                registro.estudante || "Estudante não informado"
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Professor: " + (registro.professor || "Não informado")
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Dimensão: " + obterNomeDimensao(registro.dimensao)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "tipo-" + registro.tipo,
+                "Tipo: " + (tipos[registro.tipo] || registro.tipo)
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "p",
+                "",
+                "Observação: " + (registro.observacao || "Não informada.")
+            )
+        );
+
+        cartao.appendChild(
+            criarElemento(
+                "small",
+                "",
+                "Data: " + (registro.data || "Não informada")
+            )
+        );
+
+        listaCoordenacao.appendChild(cartao);
+    });
+}
+
+// ==========================================
+// LIMPAR FILTROS
 // ==========================================
 
 function limparFiltros() {
-
     filtroEstudante.value = "";
     filtroDimensao.value = "";
     filtroTipo.value = "";
+    filtroPeriodo.value = "";
 
     exibirRegistros();
-
 }
 
-
 // ==========================================
-// 9. EVENTOS DOS FILTROS
+// EVENTOS
 // ==========================================
 
-// Atualiza os resultados quando o estudante mudar
-filtroEstudante.addEventListener("change", exibirRegistros);
+[
+    filtroEstudante,
+    filtroDimensao,
+    filtroTipo,
+    filtroPeriodo
+].forEach(campo => {
+    campo.addEventListener("change", exibirRegistros);
+});
 
-// Atualiza os resultados quando a dimensão mudar
-filtroDimensao.addEventListener("change", exibirRegistros);
-
-// Atualiza os resultados quando o tipo mudar
-filtroTipo.addEventListener("change", exibirRegistros);
-
-// Limpa todos os filtros
 botaoLimparFiltros.addEventListener("click", limparFiltros);
 
+formularioIntervencao.addEventListener(
+    "submit",
+    registrarIntervencao
+);
+
+formularioClima.addEventListener(
+    "submit",
+    registrarClimaEscolar
+);
 
 // ==========================================
-// 10. INICIALIZAÇÃO DO PAINEL
+// ATUALIZAÇÃO ENTRE ABAS
 // ==========================================
 
-// Carrega os estudantes disponíveis
+window.addEventListener("storage", evento => {
+    if (
+        evento.key === "registrosAtitudinais" ||
+        evento.key === "intervencoesAtitudinais" ||
+        evento.key === "climaEscolarAtitudinal"
+    ) {
+        registros = recuperarDados("registrosAtitudinais");
+        intervencoes = recuperarDados("intervencoesAtitudinais");
+        registrosClima = recuperarDados("climaEscolarAtitudinal");
+
+        carregarEstudantes();
+        atualizarIndicadores();
+        exibirRegistros();
+        exibirIntervencoes();
+        exibirRegistrosClima();
+    }
+});
+
+// ==========================================
+// INICIALIZAÇÃO
+// ==========================================
+
 carregarEstudantes();
 
-// Atualiza os indicadores
 atualizarIndicadores();
 
-// Apresenta os registros
 exibirRegistros();
+
+exibirIntervencoes();
+
+exibirRegistrosClima();
+
+campoDataIntervencao.value = obterDataLocalISO();
+
+campoDataClima.value = obterDataLocalISO();
