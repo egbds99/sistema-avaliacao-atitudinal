@@ -2,13 +2,19 @@
 // DADOS DE DEMONSTRAÇÃO
 // ==========================================
 
-const estudantes = [
-    "Estudante de demonstração 1",
-    "Estudante de demonstração 2",
-    "Estudante de demonstração 3",
-    "Estudante de demonstração 4",
-    "Estudante de demonstração 5"
-];
+function obterEstudantesDisponiveis() {
+    const padrao = [
+        "Estudante de demonstração 1",
+        "Estudante de demonstração 2",
+        "Estudante de demonstração 3",
+        "Estudante de demonstração 4",
+        "Estudante de demonstração 5"
+    ];
+    try {
+        const cadastrados = JSON.parse(localStorage.getItem("estudantesAtitudinais")) || [];
+        return [...new Set([...padrao, ...cadastrados.map(item => typeof item === "string" ? item : item.nome).filter(Boolean)])];
+    } catch (erro) { return padrao; }
+}
 
 const dimensoes = [
     { valor: "responsabilidade", nome: "Responsabilidade" },
@@ -183,14 +189,17 @@ function obterIdentificadorSolicitacao(item, indice) {
 // SELEÇÃO DO ESTUDANTE
 // ==========================================
 
-estudantes.forEach(function(estudante) {
-    const opcao = document.createElement("option");
-
-    opcao.value = estudante;
-    opcao.textContent = estudante;
-
-    campoEstudante.appendChild(opcao);
-});
+function carregarListaEstudantes() {
+    const selecionado = campoEstudante.value;
+    campoEstudante.innerHTML = '<option value="">Selecione seu perfil demonstrativo</option>';
+    obterEstudantesDisponiveis().forEach(function(estudante) {
+        const opcao = document.createElement("option");
+        opcao.value = estudante;
+        opcao.textContent = estudante;
+        campoEstudante.appendChild(opcao);
+    });
+    if (obterEstudantesDisponiveis().includes(selecionado)) campoEstudante.value = selecionado;
+}
 
 // ==========================================
 // RESUMO DAS DIMENSÕES
@@ -996,6 +1005,7 @@ function atualizarPagina() {
     }
 
     exibirResumo(estudanteSelecionado);
+    if (window.renderRadarAtitudinal) renderRadarAtitudinal("grafico-radar-estudante", registros, dimensoes, estudanteSelecionado);
     exibirHistorico(estudanteSelecionado);
     exibirGraficoEvolucao(estudanteSelecionado);
     exibirSolicitacoes(estudanteSelecionado);
@@ -1039,8 +1049,10 @@ window.addEventListener("storage", function(evento) {
         evento.key === "autoavaliacoesAtitudinais" ||
         evento.key === "contestacoesAtitudinais" ||
         evento.key === "devolutivasAtitudinais" ||
-        evento.key === "solicitacoesAutoavaliacaoAtitudinais"
+        evento.key === "solicitacoesAutoavaliacaoAtitudinais" ||
+        evento.key === "estudantesAtitudinais"
     ) {
+        if (evento.key === "estudantesAtitudinais") carregarListaEstudantes();
         atualizarPagina();
     }
 });
@@ -1049,4 +1061,9 @@ window.addEventListener("storage", function(evento) {
 // INICIALIZAÇÃO
 // ==========================================
 
+carregarListaEstudantes();
 atualizarPagina();
+
+// Aplica permissões demonstrativas configuradas pela coordenação.
+if (window.aplicarPermissoesAtitudinais) window.aplicarPermissoesAtitudinais("estudante");
+window.addEventListener("permissoes-atitudinais-atualizadas", () => window.aplicarPermissoesAtitudinais && window.aplicarPermissoesAtitudinais("estudante"));

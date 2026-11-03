@@ -183,3 +183,27 @@ O sistema tem como finalidade apoiar a observação pedagógica, a comunicação
 Os registros não devem substituir a análise profissional dos educadores nem ser utilizados isoladamente para produzir julgamentos ou decisões punitivas.
 
 As funcionalidades apresentadas neste projeto constituem um protótipo acadêmico e dependem de evolução técnica, pedagógica e institucional antes de qualquer utilização com dados reais.
+
+## 12. Recursos adicionais e limites técnicos
+
+### Gráfico radar
+
+O gráfico radar apresenta somente a quantidade de observações em cada dimensão. Não atribui pesos aos tipos positiva, negativa ou neutra, não produz escore único e não deve ser interpretado como nota, diagnóstico ou classificação.
+
+### Auditoria
+
+O protótipo registra ações relevantes em armazenamento local e permite consulta pela coordenação. Essa trilha é demonstrativa: os dados podem ser alterados ou excluídos por quem controla o navegador. Uma implementação institucional deverá utilizar registros centralizados, controles de integridade, política de retenção e acesso restrito.
+
+### Associação por turma
+
+Os vínculos entre estudante e turma precisam ser informados pela coordenação. O sistema não presume a turma de nenhum estudante e não deve inferir vínculos a partir de observações. Mudanças de turma devem ser atualizadas de acordo com a fonte institucional.
+
+### Frequência e desempenho
+
+A importação CSV permite visualizar dados acadêmicos informados pela instituição, separados dos registros atitudinais. O protótipo não possui integração automática com sistemas escolares, não verifica a autenticidade dos dados e não calcula alertas combinados. A interpretação conjunta deve considerar contexto, período, qualidade e finalidade dos dados.
+
+### Permissões por perfil
+
+A matriz de permissões controla a exibição de módulos na interface, mas não representa controle de acesso seguro. Em razão da ausência de autenticação e backend, não protege os dados contra acesso direto ou manipulação do `localStorage`. Em produção, cada operação deverá ser autorizada no servidor, com identidade autenticada, menor privilégio, vínculo institucional validado e auditoria centralizada.
+
+Esses recursos não substituem o diálogo pedagógico nem autorizam rankings, punições automáticas ou conclusões sobre um estudante com base em indicadores isolados.

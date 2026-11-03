@@ -1617,3 +1617,19 @@ input:focus-visible {
         padding: 15px;
     }
 }
+
+/* Visualização radar e novos módulos demonstrativos */
+.radar-layout { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; justify-content:center; }
+.radar-layout svg { width:100%; max-width:380px; height:auto; overflow:visible; }
+.radar-grid { fill:none; stroke:#cbd5e1; stroke-width:1; }
+.radar-axis { stroke:#cbd5e1; stroke-width:1; }
+.radar-area { fill:rgba(37,99,235,.18); stroke:#2563eb; stroke-width:2.5; }
+.radar-point { fill:#1d4ed8; stroke:#fff; stroke-width:1.5; }
+.radar-label { font-size:10px; fill:currentColor; }
+.radar-legenda { margin:0; padding-left:1.2rem; }
+.radar-legenda li { margin:.35rem 0; }
+.modulo-dados { margin:1.5rem 0; padding:1.25rem; border:1px solid #dbe2ea; border-radius:12px; background:#fff; }
+.modulo-dados h2 { margin-top:0; }
+.tabela-dados { width:100%; border-collapse:collapse; margin-top:1rem; }
+.tabela-dados th,.tabela-dados td { padding:.65rem; border-bottom:1px solid #e2e8f0; text-align:left; }
+.tabela-dados th { background:#f1f5f9; }

@@ -2,13 +2,22 @@
 // DADOS E ELEMENTOS
 // ==========================================
 
-const estudantes = [
+const estudantesPadrao = [
     "Estudante de demonstração 1",
     "Estudante de demonstração 2",
     "Estudante de demonstração 3",
     "Estudante de demonstração 4",
     "Estudante de demonstração 5"
 ];
+
+function obterEstudantesCadastrados() {
+    try {
+        const cadastrados = JSON.parse(localStorage.getItem("estudantesAtitudinais")) || [];
+        return [...new Set([...estudantesPadrao, ...cadastrados.map(item => typeof item === "string" ? item : item.nome).filter(Boolean)])];
+    } catch (erro) {
+        return estudantesPadrao.slice();
+    }
+}
 
 const nomesDimensoes = {
     responsabilidade: "Responsabilidade",
@@ -216,12 +225,16 @@ function carregarEstudantes() {
 
         campo.appendChild(opcaoInicial);
 
-        estudantes.forEach(function(estudante) {
+        obterEstudantesCadastrados().forEach(function(estudante) {
             const opcao = document.createElement("option");
-
+            let turma = "";
+            try {
+                const vinculos = JSON.parse(localStorage.getItem("vinculosTurmasAtitudinais")) || [];
+                const vinculo = vinculos.find(item => item.estudante === estudante);
+                if (vinculo) turma = vinculo.turma;
+            } catch (erro) { /* mantém o estudante visível mesmo sem vínculo */ }
             opcao.value = estudante;
-            opcao.textContent = estudante;
-
+            opcao.textContent = turma ? estudante + " — " + turma : estudante;
             campo.appendChild(opcao);
         });
 
@@ -233,9 +246,8 @@ function carregarEstudantes() {
 // REGISTRO RÁPIDO DE OBSERVAÇÕES
 // ==========================================
 
-// O registro é salvo automaticamente quando os três campos
-// obrigatórios são selecionados: estudante, dimensão e tipo.
-// A observação qualitativa é opcional.
+// O registro só é salvo quando o professor confirma no botão.
+// Isso permite preencher a observação qualitativa antes da gravação.
 
 let registroEmProcessamento = false;
 
@@ -275,6 +287,13 @@ function registrarObservacao() {
         id: timestamp.toString(),
         professor: professor,
         estudante: estudante,
+        turma: (() => {
+            try {
+                const vinculos = JSON.parse(localStorage.getItem("vinculosTurmasAtitudinais")) || [];
+                const vinculo = vinculos.find(item => item.estudante === estudante);
+                return vinculo ? vinculo.turma : "";
+            } catch (erro) { return ""; }
+        })(),
         dimensao: dimensao,
         tipo: tipo,
         observacao: observacao,
@@ -320,7 +339,7 @@ function registrarObservacao() {
     if (auditoriaSalva) {
         mostrarMensagem(
             mensagemSucesso,
-            "Observação registrada com sucesso! Selecione os três campos para o próximo registro.",
+            "Observação registrada com sucesso! Preencha os campos para o próximo registro.",
             true
         );
     } else {
@@ -782,12 +801,7 @@ function exibirSolicitacoes() {
 // EVENTOS
 // ==========================================
 
-// O registro rápido é concluído ao selecionar o terceiro campo obrigatório.
-campoEstudante.addEventListener("change", registrarObservacao);
-campoDimensao.addEventListener("change", registrarObservacao);
-campoTipo.addEventListener("change", registrarObservacao);
-
-// Permite que o formulário também seja enviado pelo teclado.
+// O registro é concluído somente após a confirmação explícita do professor.
 formulario.addEventListener("submit", function(evento) {
     evento.preventDefault();
     registrarObservacao();
@@ -822,6 +836,7 @@ formularioSolicitacao.addEventListener(
 window.addEventListener("storage", function(evento) {
     if (
         evento.key === "registrosAtitudinais" ||
+        evento.key === "estudantesAtitudinais" ||
         evento.key === "contestacoesAtitudinais" ||
         evento.key === "devolutivasAtitudinais" ||
         evento.key === "solicitacoesAutoavaliacaoAtitudinais"
@@ -831,6 +846,7 @@ window.addEventListener("storage", function(evento) {
         devolutivas = recuperarDados("devolutivasAtitudinais");
         solicitacoes = recuperarDados("solicitacoesAutoavaliacaoAtitudinais");
 
+        carregarEstudantes();
         exibirRegistros();
         exibirManifestacoes();
         exibirDevolutivas();
@@ -849,3 +865,7 @@ exibirRegistros();
 exibirManifestacoes();
 exibirDevolutivas();
 exibirSolicitacoes();
+
+// Aplica permissões demonstrativas configuradas pela coordenação.
+if (window.aplicarPermissoesAtitudinais) window.aplicarPermissoesAtitudinais("professor");
+window.addEventListener("permissoes-atitudinais-atualizadas", () => window.aplicarPermissoesAtitudinais && window.aplicarPermissoesAtitudinais("professor"));

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 
-<body>
+<body data-perfil="estudante">
 
     <header class="cabecalho">
         <div class="container">
@@ -42,7 +42,8 @@
             <section class="painel-estudante">
                 <h2>Minhas observações</h2>
 
-                <div id="resumo-dimensoes">
+                <div id="grafico-radar-estudante" data-permission="consultarDesenvolvimento"></div>
+                    <div id="resumo-dimensoes" data-permission="consultarDesenvolvimento">
                     <p>Selecione seu nome para visualizar suas observações.</p>
                 </div>
             </section>
@@ -54,7 +55,7 @@
                     Consulte como as observações foram registradas ao longo do tempo, considerando seus tipos: positivas, negativas e neutras.
                 </p>
 
-                <div id="grafico-evolucao" class="grafico-evolucao">
+                <div id="grafico-evolucao" data-permission="consultarDesenvolvimento" class="grafico-evolucao">
                     <p class="historico-vazio">
                         Selecione seu nome para visualizar a evolução temporal.
                     </p>
@@ -68,7 +69,7 @@
             <section class="historico-container">
                 <h2>Histórico de observações</h2>
 
-                <div id="historico-estudante">
+                <div id="historico-estudante" data-permission="consultarDesenvolvimento">
                     <p class="historico-vazio">
                         Nenhuma observação para exibir.
                     </p>
@@ -96,7 +97,7 @@
                     Utilize este espaço para refletir sobre seu próprio desenvolvimento. Sua resposta não altera os registros realizados pelo professor.
                 </p>
 
-                <form id="form-autoavaliacao">
+                <form id="form-autoavaliacao" data-permission="responderAutoavaliacao">
 
                     <div class="campo">
                         <label for="dimensao-autoavaliacao">
@@ -162,7 +163,7 @@
                     Caso queira esclarecer ou questionar uma observação, selecione o registro e escreva sua manifestação. O registro original será preservado.
                 </p>
 
-                <form id="form-contestacao">
+                <form id="form-contestacao" data-permission="contestarRegistros">
 
                     <div class="campo">
                         <label for="registro-contestacao">
@@ -220,6 +221,8 @@
         <p>Sistema de Avaliação Atitudinal</p>
     </footer>
 
+    <script src="../../js/radar-atitudinal.js"></script>
+    <script src="../../js/controle-acesso.js"></script>
     <script src="../../js/estudante.js"></script>
 
 </body>

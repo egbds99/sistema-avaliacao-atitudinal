@@ -208,13 +208,18 @@ function carregarEstudantesResponsavel() {
     // Em uma aplicação real, os estudantes seriam recuperados
     // a partir do vínculo autenticado do responsável.
 
-    const estudantes = [
+    const padrao = [
         "Estudante de demonstração 1",
         "Estudante de demonstração 2",
         "Estudante de demonstração 3",
         "Estudante de demonstração 4",
         "Estudante de demonstração 5"
     ];
+    let cadastrados = [];
+    try { cadastrados = JSON.parse(localStorage.getItem("estudantesAtitudinais")) || []; } catch (erro) { cadastrados = []; }
+    const estudantes = [...new Set([...padrao, ...cadastrados.map(item => typeof item === "string" ? item : item.nome).filter(Boolean)])];
+    const selecionado = campoEstudanteResponsavel.value;
+    campoEstudanteResponsavel.innerHTML = '<option value="">Selecione o estudante</option>';
 
     estudantes.forEach(function(estudante) {
         const opcao = document.createElement("option");
@@ -224,6 +229,7 @@ function carregarEstudantesResponsavel() {
 
         campoEstudanteResponsavel.appendChild(opcao);
     });
+    if (estudantes.includes(selecionado)) campoEstudanteResponsavel.value = selecionado;
 }
 
 // ==========================================
@@ -1037,6 +1043,7 @@ function atualizarAcompanhamentoResponsavel() {
     mensagemResponsavel.textContent = "";
 
     exibirResumoResponsavel(estudante);
+    if (window.renderRadarAtitudinal) renderRadarAtitudinal("grafico-radar-responsavel", registrosResponsavel, dimensoesResponsavel, estudante);
     exibirGraficoResponsavel(estudante);
     exibirHistoricoResponsavel(estudante);
     exibirSolicitacoesResponsavel(estudante);
@@ -1066,10 +1073,12 @@ window.addEventListener("storage", function(evento) {
         "autoavaliacoesAtitudinais",
         "contestacoesAtitudinais",
         "devolutivasAtitudinais",
-        "solicitacoesAutoavaliacaoAtitudinais"
+        "solicitacoesAutoavaliacaoAtitudinais",
+        "estudantesAtitudinais"
     ];
 
     if (chavesMonitoradas.includes(evento.key)) {
+        if (evento.key === "estudantesAtitudinais") carregarEstudantesResponsavel();
         atualizarAcompanhamentoResponsavel();
     }
 });
@@ -1080,3 +1089,7 @@ window.addEventListener("storage", function(evento) {
 
 carregarEstudantesResponsavel();
 atualizarAcompanhamentoResponsavel();
+
+// Aplica permissões demonstrativas configuradas pela coordenação.
+if (window.aplicarPermissoesAtitudinais) window.aplicarPermissoesAtitudinais("responsaveis");
+window.addEventListener("permissoes-atitudinais-atualizadas", () => window.aplicarPermissoesAtitudinais && window.aplicarPermissoesAtitudinais("responsaveis"));

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 
-<body>
+<body data-perfil="professor">
 
     <header class="cabecalho">
         <div class="container">
@@ -52,14 +52,14 @@
                 <h2>Registrar observação</h2>
 
                 <p class="descricao-secao">
-                    O registro é realizado em três seleções: estudante, dimensão atitudinal e tipo de observação. Após a terceira seleção, o sistema salva automaticamente.
+                    Selecione o estudante, a dimensão e o tipo de observação. Em seguida, preencha, se desejar, a observação qualitativa e clique em “Salvar observação”.
                 </p>
 
                 <p class="descricao-secao">
-                    A descrição qualitativa é opcional e pode ser preenchida antes de concluir as três seleções.
+                    A observação qualitativa é opcional. Você pode escrevê-la antes de salvar o registro; nada será enviado automaticamente ao selecionar os campos.
                 </p>
 
-                <form id="formulario-registro">
+                <form id="formulario-registro" data-permission="registrarObservacoes">
 
                     <div class="campo">
                         <label for="estudante">1. Estudante</label>
@@ -101,6 +101,8 @@
                         <textarea id="observacao" name="observacao" rows="4" placeholder="Descreva brevemente a situação observada..."></textarea>
                     </div>
 
+                    <button type="submit" id="salvar-observacao">Salvar observação</button>
+
                     <p id="mensagem-sucesso" class="mensagem-retorno" aria-live="polite" role="status"></p>
 
                 </form>
@@ -115,7 +117,7 @@
                     Consulte os registros atitudinais realizados.
                 </p>
 
-                <div id="lista-registros">
+                <div id="lista-registros" data-permission="registrarObservacoes">
                     <p class="historico-vazio">
                         Nenhuma observação registrada.
                     </p>
@@ -155,7 +157,7 @@
                     Registre uma orientação ou devolutiva individual relacionada ao acompanhamento do estudante.
                 </p>
 
-                <form id="form-devolutiva">
+                <form id="form-devolutiva" data-permission="devolutivas">
 
                     <div class="campo">
                         <label for="estudante-devolutiva">Estudante</label>
@@ -197,7 +199,7 @@
                     O professor pode solicitar que o estudante reflita sobre seu próprio desenvolvimento atitudinal. A solicitação ficará disponível na área do estudante.
                 </p>
 
-                <form id="form-solicitacao-autoavaliacao">
+                <form id="form-solicitacao-autoavaliacao" data-permission="solicitarAutoavaliacao">
 
                     <div class="campo">
                         <label for="estudante-solicitacao">
@@ -268,6 +270,7 @@
         <p>Sistema de Avaliação Atitudinal</p>
     </footer>
 
+    <script src="../../js/controle-acesso.js"></script>
     <script src="../../js/script.js"></script>
 
 </body>

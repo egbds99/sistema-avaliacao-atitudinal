@@ -29,6 +29,7 @@ const filtroEstudante = document.getElementById("filtro-estudante");
 const filtroDimensao = document.getElementById("filtro-dimensao");
 const filtroTipo = document.getElementById("filtro-tipo");
 const filtroPeriodo = document.getElementById("filtro-periodo");
+const filtroTurma = document.getElementById("filtro-turma");
 
 const listaCoordenacao = document.getElementById("lista-coordenacao");
 const quantidadeFiltrada = document.getElementById("quantidade-filtrada");
@@ -97,6 +98,10 @@ let registros = recuperarDados("registrosAtitudinais");
 let intervencoes = recuperarDados("intervencoesAtitudinais");
 let registrosClima = recuperarDados("climaEscolarAtitudinal");
 let auditoria = recuperarDados("auditoriaAtitudinal");
+let vinculosTurmas = recuperarDados("vinculosTurmasAtitudinais");
+let estudantesCadastrados = recuperarDados("estudantesAtitudinais");
+let turmasCadastradas = recuperarDados("turmasAtitudinais");
+let dadosAcademicos = recuperarDados("dadosAcademicosAtitudinais");
 
 // ==========================================
 // AUDITORIA DA COORDENAÇÃO
@@ -232,22 +237,27 @@ function formatarDataISO(dataISO) {
 // CARREGAMENTO DOS ESTUDANTES
 // ==========================================
 
+function obterNomesEstudantes() {
+    return [...new Set([
+        "Estudante de demonstração 1",
+        "Estudante de demonstração 2",
+        "Estudante de demonstração 3",
+        "Estudante de demonstração 4",
+        "Estudante de demonstração 5",
+        ...estudantesCadastrados.map(item => typeof item === "string" ? item : item.nome),
+        ...registros.map(item => item.estudante),
+        ...intervencoes.map(item => item.estudante),
+        ...vinculosTurmas.map(item => item.estudante)
+    ].filter(Boolean))].sort();
+}
+
 function carregarEstudantes() {
     const estudanteSelecionado = filtroEstudante.value;
+    const estudanteIntervencaoSelecionado = seletorEstudanteIntervencao.value;
+    const estudantes = obterNomesEstudantes();
 
-    const estudanteIntervencaoSelecionado =
-        seletorEstudanteIntervencao.value;
-
-    const estudantes = [...new Set([
-        ...registros.map(item => item.estudante),
-        ...intervencoes.map(item => item.estudante)
-    ].filter(Boolean))].sort();
-
-    filtroEstudante.innerHTML =
-        '<option value="">Todos os estudantes</option>';
-
-    seletorEstudanteIntervencao.innerHTML =
-        '<option value="">Selecione um estudante</option>';
+    filtroEstudante.innerHTML = '<option value="">Todos os estudantes</option>';
+    seletorEstudanteIntervencao.innerHTML = '<option value="">Selecione um estudante</option>';
 
     estudantes.forEach(estudante => {
         const opcaoFiltro = document.createElement("option");
@@ -261,14 +271,8 @@ function carregarEstudantes() {
         seletorEstudanteIntervencao.appendChild(opcaoIntervencao);
     });
 
-    if (estudantes.includes(estudanteSelecionado)) {
-        filtroEstudante.value = estudanteSelecionado;
-    }
-
-    if (estudantes.includes(estudanteIntervencaoSelecionado)) {
-        seletorEstudanteIntervencao.value =
-            estudanteIntervencaoSelecionado;
-    }
+    if (estudantes.includes(estudanteSelecionado)) filtroEstudante.value = estudanteSelecionado;
+    if (estudantes.includes(estudanteIntervencaoSelecionado)) seletorEstudanteIntervencao.value = estudanteIntervencaoSelecionado;
 }
 
 // ==========================================
@@ -300,6 +304,7 @@ function filtrarRegistros() {
     const dimensao = filtroDimensao.value;
     const tipo = filtroTipo.value;
     const periodo = Number(filtroPeriodo.value);
+    const turma = filtroTurma ? filtroTurma.value : "";
 
     return registros.filter(registro => {
         const correspondeEstudante = !estudante || registro.estudante === estudante;
@@ -307,6 +312,9 @@ function filtrarRegistros() {
         const correspondeDimensao = !dimensao || registro.dimensao === dimensao;
 
         const correspondeTipo = !tipo || registro.tipo === tipo;
+        const vinculo = vinculosTurmas.find(v => v.estudante === registro.estudante);
+        const turmaRegistro = registro.turma || (vinculo && vinculo.turma) || "";
+        const correspondeTurma = !turma || turmaRegistro === turma;
 
         let correspondePeriodo = true;
 
@@ -325,6 +333,7 @@ function filtrarRegistros() {
         }
 
         return correspondeEstudante &&
+            correspondeTurma &&
             correspondeDimensao &&
             correspondeTipo &&
             correspondePeriodo;
@@ -445,6 +454,7 @@ function exibirEvolucaoTemporal(registrosFiltrados) {
     }
 
     const periodo = Number(filtroPeriodo.value);
+    const turma = filtroTurma ? filtroTurma.value : "";
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
@@ -1332,19 +1342,218 @@ function limparFiltros() {
     filtroDimensao.value = "";
     filtroTipo.value = "";
     filtroPeriodo.value = "";
+    if (filtroTurma) filtroTurma.value = "";
 
     exibirRegistros();
+}
+
+// Módulo demonstrativo de cadastro de turmas, estudantes e integração CSV
+function atualizarModuloTurmas() {
+    const seletor = document.getElementById("vinculo-estudante");
+    const filtro = document.getElementById("filtro-turma");
+    const seletorTurma = document.getElementById("vinculo-turma");
+    const seletorTurmaNovo = document.getElementById("turma-novo-estudante");
+    const lista = document.getElementById("lista-vinculos-turma");
+    const resumo = document.getElementById("resumo-dados-academicos");
+    if (!seletor || !filtro || !seletorTurma || !lista || !resumo) return;
+
+    const estudantes = obterNomesEstudantes();
+    const turmas = [...new Set([
+        "6º Ano A", "6º Ano B", "7º Ano A", "7º Ano B", "8º Ano A", "9º Ano A",
+        ...turmasCadastradas.map(item => typeof item === "string" ? item : item.nome),
+        ...vinculosTurmas.map(item => item.turma)
+    ].filter(Boolean))].sort();
+
+    const estudanteAtual = seletor.value;
+    seletor.innerHTML = '<option value="">Selecione um estudante</option>';
+    estudantes.forEach(nome => {
+        const opcao = document.createElement("option");
+        opcao.value = nome;
+        opcao.textContent = nome;
+        seletor.appendChild(opcao);
+    });
+    if (estudantes.includes(estudanteAtual)) seletor.value = estudanteAtual;
+
+    const turmaAtual = filtro.value;
+    filtro.innerHTML = '<option value="">Todas as turmas</option>';
+    turmas.forEach(turma => {
+        const opcao = document.createElement("option");
+        opcao.value = turma;
+        opcao.textContent = turma;
+        filtro.appendChild(opcao);
+    });
+    if (turmas.includes(turmaAtual)) filtro.value = turmaAtual;
+
+    const turmaVinculoAtual = seletorTurma.value;
+    seletorTurma.innerHTML = '<option value="">Selecione uma turma</option>';
+    turmas.forEach(turma => {
+        const opcao = document.createElement("option");
+        opcao.value = turma;
+        opcao.textContent = turma;
+        seletorTurma.appendChild(opcao);
+    });
+    if (turmas.includes(turmaVinculoAtual)) seletorTurma.value = turmaVinculoAtual;
+
+    if (seletorTurmaNovo) {
+        const turmaNovoAtual = seletorTurmaNovo.value;
+        seletorTurmaNovo.innerHTML = '<option value="">Sem turma definida</option>';
+        turmas.forEach(turma => {
+            const opcao = document.createElement("option");
+            opcao.value = turma;
+            opcao.textContent = turma;
+            seletorTurmaNovo.appendChild(opcao);
+        });
+        if (turmas.includes(turmaNovoAtual)) seletorTurmaNovo.value = turmaNovoAtual;
+    }
+
+    lista.innerHTML = "<h3>Turmas e vínculos cadastrados</h3>";
+    const tabela = document.createElement("table");
+    tabela.className = "tabela-dados";
+    tabela.innerHTML = "<thead><tr><th>Estudante</th><th>Turma atribuída</th></tr></thead>";
+    const corpo = document.createElement("tbody");
+    estudantes.forEach(estudante => {
+        const vinculo = vinculosTurmas.find(item => item.estudante === estudante);
+        const linha = document.createElement("tr");
+        [estudante, vinculo ? vinculo.turma : "Não atribuída"].forEach(valor => {
+            const celula = document.createElement("td");
+            celula.textContent = valor;
+            linha.appendChild(celula);
+        });
+        corpo.appendChild(linha);
+    });
+    tabela.appendChild(corpo);
+    lista.appendChild(tabela);
+
+    resumo.innerHTML = "<h3>Dados acadêmicos importados</h3>";
+    if (!dadosAcademicos.length) {
+        resumo.appendChild(criarElemento("p", "historico-vazio", "Nenhum dado de frequência ou desempenho importado."));
+    } else {
+        const tabelaAcademica = document.createElement("table");
+        tabelaAcademica.className = "tabela-dados";
+        tabelaAcademica.innerHTML = "<thead><tr><th>Estudante</th><th>Turma</th><th>Frequência</th><th>Desempenho</th><th>Período</th><th>Observações atitudinais</th></tr></thead>";
+        const corpoAcademico = document.createElement("tbody");
+        dadosAcademicos.forEach(dado => {
+            const linha = document.createElement("tr");
+            [dado.estudante, dado.turma, dado.frequencia + "%", dado.desempenho, dado.periodo, registros.filter(registro => registro.estudante === dado.estudante).length].forEach(valor => {
+                const celula = document.createElement("td");
+                celula.textContent = valor;
+                linha.appendChild(celula);
+            });
+            corpoAcademico.appendChild(linha);
+        });
+        tabelaAcademica.appendChild(corpoAcademico);
+        resumo.appendChild(tabelaAcademica);
+    }
+}
+
+function salvarVinculoTurma() {
+    const estudante = document.getElementById("vinculo-estudante").value;
+    const turma = document.getElementById("vinculo-turma").value;
+    if (!estudante || !turma) {
+        alert("Selecione o estudante e a turma.");
+        return;
+    }
+    const vinculo = vinculosTurmas.find(item => item.estudante === estudante);
+    if (vinculo) vinculo.turma = turma;
+    else vinculosTurmas.push({ estudante, turma, atualizadoEm: new Date().toISOString() });
+    if (!salvarDados("vinculosTurmasAtitudinais", vinculosTurmas)) {
+        alert("Não foi possível salvar o vínculo no navegador.");
+        return;
+    }
+    registrarAuditoria("Atribuição de estudante à turma", "Coordenação", estudante, "Turma: " + turma, null);
+    document.getElementById("vinculo-turma").value = "";
+    atualizarModuloTurmas();
+    exibirRegistros();
+}
+
+function cadastrarNovaTurma() {
+    const campo = document.getElementById("nova-turma");
+    const nome = campo.value.trim();
+    if (!nome) { alert("Informe o nome da turma."); return; }
+    const existe = [...turmasCadastradas.map(item => typeof item === "string" ? item : item.nome), "6º Ano A", "6º Ano B", "7º Ano A", "7º Ano B", "8º Ano A", "9º Ano A"].some(t => t.toLocaleLowerCase("pt-BR") === nome.toLocaleLowerCase("pt-BR"));
+    if (existe) { alert("Essa turma já está cadastrada."); return; }
+    turmasCadastradas.push({ nome, criadaEm: new Date().toISOString() });
+    if (!salvarDados("turmasAtitudinais", turmasCadastradas)) { alert("Não foi possível salvar a turma."); return; }
+    registrarAuditoria("Cadastro de nova turma", "Coordenação", "Não aplicável", "Turma criada: " + nome, null);
+    campo.value = "";
+    atualizarModuloTurmas();
+}
+
+function cadastrarNovoEstudante() {
+    const campo = document.getElementById("novo-estudante");
+    const nome = campo.value.trim();
+    const turma = document.getElementById("turma-novo-estudante").value;
+    if (!nome) { alert("Informe o nome do estudante."); return; }
+    if (obterNomesEstudantes().some(estudante => estudante.toLocaleLowerCase("pt-BR") === nome.toLocaleLowerCase("pt-BR"))) {
+        alert("Já existe um estudante com esse nome.");
+        return;
+    }
+    estudantesCadastrados.push({ nome, criadoEm: new Date().toISOString() });
+    if (!salvarDados("estudantesAtitudinais", estudantesCadastrados)) { alert("Não foi possível salvar o estudante."); return; }
+    if (turma) {
+        vinculosTurmas.push({ estudante: nome, turma, atualizadoEm: new Date().toISOString() });
+        salvarDados("vinculosTurmasAtitudinais", vinculosTurmas);
+    }
+    registrarAuditoria("Cadastro de novo estudante", "Coordenação", nome, turma ? "Turma inicial: " + turma : "Estudante cadastrado sem turma.", null);
+    campo.value = "";
+    carregarEstudantes();
+    atualizarModuloTurmas();
+}
+
+function parseLinhaCSV(linha) {
+    const out=[];let v="",q=false;
+    for(let i=0;i<linha.length;i++){const c=linha[i];if(c==='"'){if(q&&linha[i+1]==='"'){v+='"';i++;}else q=!q;}else if((c===","||c===";")&&!q){out.push(v.trim());v="";}else v+=c;}
+    out.push(v.trim());return out;
+}
+async function importarDadosAcademicos() {
+    const arquivo=document.getElementById("arquivo-dados-academicos").files[0];
+    const msg=document.getElementById("mensagem-importacao");
+    if(!arquivo){msg.textContent="Selecione um CSV.";return;}
+    try {
+      const linhas=(await arquivo.text()).replace(/^\uFEFF/,"").split(/\r?\n/).filter(x=>x.trim());
+      const cab=parseLinhaCSV(linhas.shift()).map(x=>x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""));
+      const idx=n=>cab.indexOf(n);
+      const campos=["estudante","turma","frequencia","desempenho","periodo"];
+      if(linhas.length===0||campos.some(c=>idx(c)<0))throw Error("Cabeçalho esperado: estudante,turma,frequencia,desempenho,periodo.");
+      const novos=linhas.map((l,i)=>{const c=parseLinhaCSV(l);const freq=Number(String(c[idx("frequencia")]).replace("%","").replace(",","."));const d={estudante:c[idx("estudante")],turma:c[idx("turma")],frequencia:freq,desempenho:c[idx("desempenho")],periodo:c[idx("periodo")],importadoEm:new Date().toISOString()};if(!d.estudante||!d.turma||!Number.isFinite(freq)||freq<0||freq>100||!d.desempenho||!d.periodo)throw Error("Dados inválidos na linha "+(i+2)+".");return d;});
+      dadosAcademicos=dadosAcademicos.concat(novos);
+      novos.forEach(d=>{const v=vinculosTurmas.find(x=>x.estudante===d.estudante);if(v)v.turma=d.turma;else vinculosTurmas.push({estudante:d.estudante,turma:d.turma});});
+      if(!salvarDados("dadosAcademicosAtitudinais",dadosAcademicos)||!salvarDados("vinculosTurmasAtitudinais",vinculosTurmas))throw Error("Não foi possível salvar no navegador.");
+      registrarAuditoria("Importação de frequência e desempenho","Coordenação","Não aplicável",novos.length+" linha(s) importada(s).",null);
+      msg.textContent=novos.length+" registro(s) importado(s).";atualizarModuloTurmas();carregarEstudantes();exibirRegistros();
+    } catch(e){msg.textContent="Importação não realizada: "+e.message;}
+}
+function montarEditorPermissoes() {
+ const c=document.getElementById("editor-permissoes");if(!c||!window.obterPermissoesAtitudinais)return;
+ const m={professor:{registrarObservacoes:"Registrar observações",devolutivas:"Registrar devolutivas",solicitarAutoavaliacao:"Solicitar autoavaliações"},coordenacao:{consultarIndicadores:"Consultar indicadores",consultarAuditoria:"Consultar auditoria",gerirTurmas:"Gerir turmas",importarAcademicos:"Importar dados acadêmicos",registrarIntervencoes:"Registrar intervenções"},estudante:{consultarDesenvolvimento:"Consultar desenvolvimento",responderAutoavaliacao:"Responder autoavaliações",contestarRegistros:"Contestar registros"},responsaveis:{consultarDesenvolvimento:"Consultar desenvolvimento",contestarRegistros:"Registrar manifestações"}};
+ const p=window.obterPermissoesAtitudinais();c.innerHTML="";
+ Object.entries(m).forEach(([perfil,itens])=>{const grupo=criarElemento("div","campo");grupo.appendChild(criarElemento("h3","",perfil));Object.entries(itens).forEach(([k,n])=>{const label=document.createElement("label");label.style.display="block";const cb=document.createElement("input");cb.type="checkbox";cb.dataset.perfil=perfil;cb.dataset.modulo=k;cb.checked=p[perfil]?.[k]!==false;label.append(cb,document.createTextNode(" "+n));grupo.appendChild(label);});c.appendChild(grupo);});
+}
+function salvarEditorPermissoes() {
+ const p=window.obterPermissoesAtitudinais();
+ document.querySelectorAll("#editor-permissoes input").forEach(cb=>{p[cb.dataset.perfil][cb.dataset.modulo]=cb.checked;});
+ window.salvarPermissoesAtitudinais(p);
+ document.getElementById("mensagem-permissoes").textContent="Permissões demonstrativas salvas.";
+ registrarAuditoria("Atualização das permissões demonstrativas","Coordenação","Não aplicável","Matriz de permissões atualizada.",null);
 }
 
 // ==========================================
 // EVENTOS
 // ==========================================
 
+document.getElementById("salvar-permissoes")?.addEventListener("click", salvarEditorPermissoes);
+montarEditorPermissoes();
+document.getElementById("salvar-vinculo-turma")?.addEventListener("click", salvarVinculoTurma);
+document.getElementById("cadastrar-turma")?.addEventListener("click", cadastrarNovaTurma);
+document.getElementById("cadastrar-estudante")?.addEventListener("click", cadastrarNovoEstudante);
+document.getElementById("importar-dados-academicos")?.addEventListener("click", importarDadosAcademicos);
+
 [
     filtroEstudante,
     filtroDimensao,
     filtroTipo,
-    filtroPeriodo
+    filtroPeriodo,
+    ...(filtroTurma ? [filtroTurma] : [])
 ].forEach(campo => {
     campo.addEventListener("change", exibirRegistros);
 });
@@ -1395,12 +1604,20 @@ window.addEventListener("storage", evento => {
         evento.key === "registrosAtitudinais" ||
         evento.key === "intervencoesAtitudinais" ||
         evento.key === "climaEscolarAtitudinal" ||
-        evento.key === "auditoriaAtitudinal"
+        evento.key === "auditoriaAtitudinal" ||
+        evento.key === "vinculosTurmasAtitudinais" ||
+        evento.key === "estudantesAtitudinais" ||
+        evento.key === "turmasAtitudinais" ||
+        evento.key === "dadosAcademicosAtitudinais"
     ) {
         registros = recuperarDados("registrosAtitudinais");
         intervencoes = recuperarDados("intervencoesAtitudinais");
         registrosClima = recuperarDados("climaEscolarAtitudinal");
         auditoria = recuperarDados("auditoriaAtitudinal");
+        vinculosTurmas = recuperarDados("vinculosTurmasAtitudinais");
+        estudantesCadastrados = recuperarDados("estudantesAtitudinais");
+        turmasCadastradas = recuperarDados("turmasAtitudinais");
+        dadosAcademicos = recuperarDados("dadosAcademicosAtitudinais");
 
         carregarEstudantes();
         atualizarIndicadores();
@@ -1410,14 +1627,43 @@ window.addEventListener("storage", evento => {
 
         atualizarFiltroEstudantesAuditoria();
         exibirAuditoria();
+        atualizarModuloTurmas();
     }
 });
+
+// Dados fictícios iniciais para que a atribuição por turma já possa ser testada.
+if (!estudantesCadastrados.length) {
+    estudantesCadastrados = [
+        { nome: "Estudante de demonstração 1", demonstrativo: true },
+        { nome: "Estudante de demonstração 2", demonstrativo: true },
+        { nome: "Estudante de demonstração 3", demonstrativo: true },
+        { nome: "Estudante de demonstração 4", demonstrativo: true },
+        { nome: "Estudante de demonstração 5", demonstrativo: true }
+    ];
+    salvarDados("estudantesAtitudinais", estudantesCadastrados);
+}
+if (!turmasCadastradas.length) {
+    turmasCadastradas = ["6º Ano A", "6º Ano B", "7º Ano A", "7º Ano B", "8º Ano A", "9º Ano A"];
+    salvarDados("turmasAtitudinais", turmasCadastradas);
+}
+if (!vinculosTurmas.length) {
+    vinculosTurmas = [
+        { estudante: "Estudante de demonstração 1", turma: "6º Ano A", demonstrativo: true },
+        { estudante: "Estudante de demonstração 2", turma: "6º Ano A", demonstrativo: true },
+        { estudante: "Estudante de demonstração 3", turma: "7º Ano A", demonstrativo: true },
+        { estudante: "Estudante de demonstração 4", turma: "8º Ano A", demonstrativo: true },
+        { estudante: "Estudante de demonstração 5", turma: "9º Ano A", demonstrativo: true }
+    ];
+    salvarDados("vinculosTurmasAtitudinais", vinculosTurmas);
+}
 
 // ==========================================
 // INICIALIZAÇÃO
 // ==========================================
 
 carregarEstudantes();
+montarEditorPermissoes();
+atualizarModuloTurmas();
 
 atualizarIndicadores();
 
@@ -1434,3 +1680,7 @@ exibirAuditoria();
 campoDataIntervencao.value = obterDataLocalISO();
 
 campoDataClima.value = obterDataLocalISO();
+
+// Aplica permissões demonstrativas configuradas pela coordenação.
+if (window.aplicarPermissoesAtitudinais) window.aplicarPermissoesAtitudinais("coordenacao");
+window.addEventListener("permissoes-atitudinais-atualizadas", () => window.aplicarPermissoesAtitudinais && window.aplicarPermissoesAtitudinais("coordenacao"));

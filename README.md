@@ -138,3 +138,40 @@ sistema-avaliacao-atitudinal/
 │
 └── docs/
     └── privacidade-e-salvaguardas.md
+
+## 11. Recursos adicionais implementados
+
+### Gráfico radar formativo
+
+As áreas do estudante e dos responsáveis apresentam um gráfico radar com a quantidade de observações em cada uma das cinco dimensões. O gráfico não converte tipos de observação em pontos, não calcula nota geral e não estabelece comparação entre estudantes.
+
+### Auditoria demonstrativa
+
+As ações relevantes realizadas nas áreas de professor, coordenação, estudante e responsáveis são registradas em `auditoriaAtitudinal`, com perfil, ação, responsável, estudante relacionado, detalhes e data/hora. A coordenação pode consultar os eventos na seção de auditoria. Como os dados ficam no `localStorage`, o histórico pode ser alterado ou apagado no navegador e não constitui trilha inviolável.
+
+### Análise por turma
+
+A coordenação pode associar manualmente cada estudante a uma turma e filtrar os registros atitudinais por esse vínculo. Os vínculos ficam em `vinculosTurmasAtitudinais`. Nenhuma turma é presumida para os estudantes já existentes; é necessário cadastrar a associação.
+
+### Frequência e desempenho
+
+A coordenação pode importar um arquivo CSV com as colunas `estudante,turma,frequencia,desempenho,periodo`. Os dados são armazenados separadamente em `dadosAcademicosAtitudinais` e exibidos para consulta conjunta. Um modelo está disponível em `docs/modelo-importacao-dados-academicos.csv`.
+
+A importação não conecta automaticamente o sistema a uma plataforma escolar, não valida a origem institucional e não calcula indicadores combinados nem alertas automáticos. A frequência deve ser informada como percentual entre 0 e 100. O campo desempenho é descritivo e preserva o valor fornecido.
+
+### Permissões por perfil
+
+A coordenação pode habilitar ou desabilitar a exibição de módulos por perfil na matriz de permissões. A configuração é salva em `permissoesAtitudinais`. Trata-se exclusivamente de controle demonstrativo da interface: como o protótipo não possui autenticação, backend ou autorização no servidor, não impede acesso direto a arquivos, scripts ou dados do navegador. Não utilizar dados pessoais reais.
+
+## 12. Execução e validação
+
+Abra `index.html` em um navegador moderno. Para a importação CSV, selecione um arquivo no módulo da coordenação. Use apenas dados fictícios durante os testes. As funcionalidades que dependem de armazenamento utilizam o `localStorage` do navegador e não sincronizam automaticamente entre dispositivos.
+
+
+## Cadastro demonstrativo de estudantes e turmas
+
+Na área da coordenação, o módulo **Análise por turma e dados acadêmicos** permite atribuir estudantes às turmas, criar novas turmas e cadastrar novos estudantes (com turma inicial opcional). A versão inclui turmas fictícias e cinco estudantes demonstrativos para facilitar os testes. Os estudantes cadastrados ficam disponíveis nos seletores das demais áreas.
+
+Na área do professor, a observação só é salva após clicar em **Salvar observação**. Assim, é possível preencher a observação qualitativa opcional sem que a seleção dos três campos obrigatórios envie o formulário automaticamente.
+
+Esses cadastros também são demonstrativos e ficam armazenados localmente no navegador (`localStorage`).
