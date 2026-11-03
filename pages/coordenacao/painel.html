@@ -26,65 +26,88 @@
             </p>
         </section>
 
-
         <section class="modulo-dados" aria-labelledby="titulo-turmas">
             <h2 id="titulo-turmas" data-permission="gerirTurmas">Análise por turma e dados acadêmicos</h2>
             <p>Associe estudantes a turmas e importe dados de frequência e desempenho para consulta conjunta. Esses dados permanecem separados das observações atitudinais.</p>
+
             <div class="filtros">
-                <div class="campo">
-                    <label for="filtro-turma">Filtrar registros por turma</label>
-                    <select id="filtro-turma" data-permission="gerirTurmas"><option value="">Todas as turmas</option></select>
-                </div>
                 <div class="campo">
                     <label for="vinculo-estudante">Estudante</label>
                     <select id="vinculo-estudante" data-permission="gerirTurmas"><option value="">Selecione</option></select>
                 </div>
+
                 <div class="campo">
                     <label for="vinculo-turma">Turma</label>
                     <select id="vinculo-turma" data-permission="gerirTurmas"><option value="">Selecione uma turma</option></select>
                 </div>
+
                 <div class="campo">
                     <label>&nbsp;</label>
                     <button type="button" id="salvar-vinculo-turma" data-permission="gerirTurmas">Atribuir turma ao estudante</button>
                 </div>
             </div>
+
             <div id="lista-vinculos-turma"></div>
-            <div class="filtros" style="margin-top:1.5rem">
-                <div class="campo">
-                    <label for="nova-turma">Cadastrar nova turma</label>
-                    <input id="nova-turma" type="text" data-permission="gerirTurmas" placeholder="Ex.: 8º Ano C">
+
+            <!-- CADASTROS ORGANIZADOS EM CARTÕES INDEPENDENTES -->
+
+            <div class="cadastros-turma-container">
+
+                <div class="card-cadastro-turma">
+                    <h3>Cadastrar nova turma</h3>
+                    <p>Adicione uma turma para organizar os estudantes.</p>
+
+                    <div class="campo">
+                        <label for="nova-turma">Nome da turma</label>
+                        <input id="nova-turma" type="text" data-permission="gerirTurmas" placeholder="Ex.: 8º Ano C">
+                    </div>
+
+                    <button type="button" id="cadastrar-turma" data-permission="gerirTurmas" class="botao-cadastro">
+                        Criar turma
+                    </button>
                 </div>
-                <div class="campo">
-                    <label>&nbsp;</label>
-                    <button type="button" id="cadastrar-turma" data-permission="gerirTurmas">Criar turma</button>
+
+                <div class="card-cadastro-turma">
+                    <h3>Cadastrar novo estudante</h3>
+                    <p>Cadastre um estudante e, se desejar, atribua uma turma.</p>
+
+                    <div class="campo">
+                        <label for="novo-estudante">Nome do estudante</label>
+                        <input id="novo-estudante" type="text" data-permission="gerirTurmas" placeholder="Nome fictício do estudante">
+                    </div>
+
+                    <div class="campo">
+                        <label for="turma-novo-estudante">Turma inicial (opcional)</label>
+                        <select id="turma-novo-estudante" data-permission="gerirTurmas">
+                            <option value="">Sem turma definida</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="cadastrar-estudante" data-permission="gerirTurmas" class="botao-cadastro">
+                        Criar estudante
+                    </button>
                 </div>
-                <div class="campo">
-                    <label for="novo-estudante">Cadastrar novo estudante</label>
-                    <input id="novo-estudante" type="text" data-permission="gerirTurmas" placeholder="Nome fictício do estudante">
-                </div>
-                <div class="campo">
-                    <label for="turma-novo-estudante">Turma inicial (opcional)</label>
-                    <select id="turma-novo-estudante" data-permission="gerirTurmas"><option value="">Sem turma definida</option></select>
-                </div>
-                <div class="campo">
-                    <label>&nbsp;</label>
-                    <button type="button" id="cadastrar-estudante" data-permission="gerirTurmas">Criar estudante</button>
-                </div>
+
             </div>
+
             <hr>
+
             <h3>Importar frequência e desempenho (CSV)</h3>
             <p>Colunas obrigatórias: <code>estudante,turma,frequencia,desempenho,periodo</code>. Frequência deve ser percentual (0 a 100); desempenho é um campo descritivo ou indicador informado pela instituição. Não use dados pessoais reais neste protótipo.</p>
+
             <input type="file" id="arquivo-dados-academicos" data-permission="importarAcademicos" accept=".csv,text/csv">
             <button type="button" id="importar-dados-academicos" data-permission="importarAcademicos">Importar arquivo CSV</button>
+
             <p id="mensagem-importacao" role="status"></p>
             <div id="resumo-dados-academicos"></div>
+
             <p class="aviso-prototipo">A integração é demonstrativa por importação CSV. Não há conexão automática com sistemas escolares, validação institucional nem cálculo de alertas combinados.</p>
         </section>
-
 
         <section class="modulo-dados" id="painel-permissoes">
             <h2>Permissões demonstrativas por perfil</h2>
             <p>Ative ou desative módulos exibidos em cada área. Esta configuração atua apenas na interface do navegador e não protege dados contra acesso direto ou manipulação do armazenamento local.</p>
+
             <div id="editor-permissoes"></div>
             <button type="button" id="salvar-permissoes">Salvar permissões</button>
             <p id="mensagem-permissoes" role="status"></p>
@@ -132,6 +155,13 @@
             </div>
 
             <div class="filtros">
+
+                <div class="campo">
+                    <label for="filtro-turma">Filtrar registros por turma</label>
+                    <select id="filtro-turma" data-permission="gerirTurmas">
+                        <option value="">Todas as turmas</option>
+                    </select>
+                </div>
 
                 <div class="campo">
                     <label for="filtro-estudante">Estudante</label>
